@@ -11,6 +11,9 @@ cmake_policy(SET CMP0074 NEW)
 set(OpenSceneGraph_ROOT "" CACHE PATH "osg root path")
 set(OpenSceneGraph_BINARY_ROOT "" CACHE PATH "osg binary root path")
 
+if(NOT OpenSceneGraph_ROOT OR NOT OpenSceneGraph_BINARY_ROOT)
+	message(FATAL_ERROR "OpenSceneGraph_ROOT is null")
+endif()
 SET( include_dir "")
 
 message(STATUS "modulePath:${CMAKE_MODULE_PATH}")
@@ -21,9 +24,11 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #LIBRARY_OUTPUT_PATH
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-FIND_PACKAGE(OpensceneGraph  COMPONENTS osg osgDB osgUtil osgViewer osgText osgGA osgManipulator osgVolume)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/findCustomOSG.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/common.cmake) 
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/findCustomOSG.cmake)
+
+FIND_PACKAGE(OpensceneGraph  COMPONENTS osg osgDB osgUtil osgViewer osgText osgGA osgManipulator osgVolume)
 IF(NOT OPENSCENEGRAPH_FOUND)
 	MESSAGE("------------------is openscengraph found:${OPENSCENEGRAPH_FOUND}")
 ELSE()
@@ -87,7 +92,13 @@ ${OSGFX_LIBRARIES}
  )
  
  set(MY_CUSTOM_PATH ${OpenSceneGraph_BINARY_ROOT}/bin)
- set(MY_PATH "PATH=%PATH%" ${MY_CUSTOM_PATH})
+ set(MY_PATH "PATH=${MY_CUSTOM_PATH};%PATH%")
+ message(STATUS "modulePath:${MY_CUSTOM_PATH}")
 
+# test
 add_subdirectory(src/osgTest)
- message(STATUS "modulePath:${CMAKE_MODULE_PATH}")
+# base
+
+add_subdirectory(src/base/01-osgSimple3)
+add_subdirectory(src/base/01-osgSimple3-2)
+
