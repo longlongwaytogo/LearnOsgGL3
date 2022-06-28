@@ -97,8 +97,11 @@ ${OSGFX_LIBRARIES}
 
 # test
 add_subdirectory(src/osgTest)
-# base
 
+# base
 add_subdirectory(src/base/01-osgSimple3)
 add_subdirectory(src/base/01-osgSimple3-2)
+
+# sim
+add_subdirectory(src/sim/02-clip)
 
