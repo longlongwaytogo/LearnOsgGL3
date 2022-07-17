@@ -4,7 +4,7 @@
 
 		auhor: longlongwaytogo
 		email: longlongway2012@hotmail.com
-		repo: [https://github.com/longlongwaytogo/LearnOsgGL3](https://github.com/longlongwaytogo/LearnOsgGL3)
+		repo: https://github.com/longlongwaytogo/LearnOsgGL3
 
 - 序
 个人从事osg开发已经近12年，一直都是输入，没有太多输出，想把接触到osg3.3相关的例子整理分享出来。
@@ -16,7 +16,7 @@ GL3模式可以使用高级shader进行编程，更好玩，更有意思，以�
 	
 - 基础篇
 	- 环境搭建
-		- [osg gl3 模式编译](docs/base/01-01-环境搭建.md)
+		- [osg gl3 模式编译](https://github.com/longlongwaytogo/LearnOsgGL3/tree/main/docs/a-base/01-01-环境搭建.md)
 		- 基于osg gl3的环境搭建
 		- 基于osg gl3的基本设置
 		- 兼容osg早期顶点属性格式的输入布局
