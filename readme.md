@@ -1,10 +1,12 @@
 - 简介：
-
-LearnOsgGL3项目主要包含了基于OpengGL 3.3以后版本的osg相关例子研究。
+[LearnOsgGL3](https://github.com/longlongwaytogo/LearnOsgGL3)项目主要包含了基于OpengGL 3.3以后版本的osg相关例子研究。
 示例多设计osg高级特性(opengl高级特性) shader编程等主题，亦可以成为OSG进阶(Advanced OSG)。
 
-- 序
+		auhor: longlongwaytogo
+		email: longlongway2012@hotmail.com
+		repo: [https://github.com/longlongwaytogo/LearnOsgGL3](https://github.com/longlongwaytogo/LearnOsgGL3)
 
+- 序
 个人从事osg开发已经近12年，一直都是输入，没有太多输出，想把接触到osg3.3相关的例子整理分享出来。
 GL3模式可以使用高级shader进行编程，更好玩，更有意思，以下将从以下几个方面进行示例整理：
 	- 基础篇：主要讲解一些osg gl3 环境的搭建和调试工具的使用。
@@ -14,7 +16,7 @@ GL3模式可以使用高级shader进行编程，更好玩，更有意思，以�
 	
 - 基础篇
 	- 环境搭建
-		- osg gl3 模式编译
+		- [osg gl3 模式编译](
 		- 基于osg gl3的环境搭建
 		- 基于osg gl3的基本设置
 		- 兼容osg早期顶点属性格式的输入布局
