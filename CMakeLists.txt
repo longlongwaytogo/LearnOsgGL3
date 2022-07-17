@@ -99,9 +99,13 @@ ${OSGFX_LIBRARIES}
 add_subdirectory(src/osgTest)
 
 # base
-add_subdirectory(src/base/01-osgSimple3)
-add_subdirectory(src/base/01-osgSimple3-2)
+add_subdirectory(src/a-base/01-osgSimple3)
+add_subdirectory(src/a-base/01-osgSimple3-2)
 
 # sim
-add_subdirectory(src/sim/02-clip)
+add_subdirectory(src/b-sim/02-phong)
+add_subdirectory(src/b-sim/02-clip)
+
+# geometry shader test
+add_subdirectory(src/c-advanced/03-gemoetry-buttlefly)
 
