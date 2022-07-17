@@ -22,7 +22,6 @@ void configureShaders( osg::StateSet* stateSet )
 {
     const std::string vertexSource =
         "#version 130 \n"
-        //"#version 330 compatibility \n"
         " \n"
         "uniform mat4 osg_ModelViewProjectionMatrix; \n"
         "uniform mat3 osg_NormalMatrix; \n"
@@ -44,8 +43,6 @@ void configureShaders( osg::StateSet* stateSet )
 
     const std::string fragmentSource =
         "#version 130 \n"
-
-    //    "#version 330 compatibility \n"
         " \n"
         "in vec4 color; \n"
         "out vec4 fragData; \n"
@@ -66,7 +63,6 @@ void configureShaders( osg::StateSet* stateSet )
     stateSet->addUniform( new osg::Uniform( "ecLightDir", lightDir ) );
 }
 
-#include<osg/gl>
 int main( int argc, char** argv )
 {
     osg::ArgumentParser arguments( &argc, argv );
@@ -84,14 +80,13 @@ int main( int argc, char** argv )
     configureShaders( root->getOrCreateStateSet() );
 
     const int width( 800 ), height( 450 );
-    const std::string version( "3.2" );
+    const std::string version( "3.0" );
     osg::ref_ptr< osg::GraphicsContext::Traits > traits = new osg::GraphicsContext::Traits();
     traits->x = 20; traits->y = 30;
     traits->width = width; traits->height = height;
     traits->windowDecoration = true;
     traits->doubleBuffer = true;
     traits->glContextVersion = version;
-    //traits->glContextProfileMask = GL_CONTEXT_CORE_PROFILE_BIT;// 0x1;// 
     traits->readDISPLAY();
     traits->setUndefinedScreenDetailsToDefaultScreen();
     osg::ref_ptr< osg::GraphicsContext > gc = osg::GraphicsContext::createGraphicsContext( traits.get() );
