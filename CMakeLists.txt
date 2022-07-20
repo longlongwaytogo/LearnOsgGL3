@@ -106,6 +106,10 @@ add_subdirectory(src/a-base/01-osgSimple3-2)
 add_subdirectory(src/b-sim/02-phong)
 add_subdirectory(src/b-sim/02-clip)
 
+
+
+# advanced
+add_subdirectory(src/d-advanced/01-normalVisualizer)
 # geometry shader test
-add_subdirectory(src/c-advanced/03-gemoetry-buttlefly)
+add_subdirectory(src/d-advanced/03-gemoetry-buttlefly)
 
