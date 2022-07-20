@@ -55,9 +55,14 @@ GL3模式可以使用高级shader进行编程，更好玩，更有意思，以�
 
 
 
-个人公众号
-![img](https://github.com/longlongwaytogo/LearnOsgGL3/blob/main/docs/a-base/images/qrcode.bmp)
-![img](https://github.com/longlongwaytogo/LearnOsgGL3/blob/main/docs/a-base/images/qrcode.png)
-![img](docs/a-base/images/qrcode.bmp)
-![](https://raw.githubusercontent.com/longlongwaytogo/LearnOsgGL3/main/docs/a-base/images/qrcode.bmp)
-![](https://raw.githubusercontent.com/longlongwaytogo/LearnOsgGL3/main/docs/a-base/images/qrcode.png)
+个人公众号 
+
+- ![img](https://github.com/longlongwaytogo/LearnOsgGL3/blob/main/docs/a-base/images/qrcode.bmp)
+
+- ![img](https://github.com/longlongwaytogo/LearnOsgGL3/blob/main/docs/a-base/images/qrcode.png)
+
+- ![img](./docs/a-base/images/qrcode.bmp)
+
+- ![img](https://raw.githubusercontent.com/longlongwaytogo/LearnOsgGL3/main/docs/a-base/images/qrcode.bmp)
+
+- ![img](https://raw.githubusercontent.com/longlongwaytogo/LearnOsgGL3/main/docs/a-base/images/qrcode.png)
