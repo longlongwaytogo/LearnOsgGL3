@@ -3,7 +3,6 @@ project(LearnOsgGL3)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-
 option(use_gl3 "use gl3" ON)
 
 cmake_policy(SET CMP0074 NEW)
@@ -94,7 +93,10 @@ ${OSGFX_LIBRARIES}
  set(MY_CUSTOM_PATH ${OpenSceneGraph_BINARY_ROOT}/bin)
  set(MY_PATH "PATH=${MY_CUSTOM_PATH};%PATH%")
  message(STATUS "modulePath:${MY_CUSTOM_PATH}")
+ 
+# add cmake module
 
+add_custom_target("cmake_module" SOURCES cmake/common.cmake cmake/findCustomOSG.cmake)
 # test
 add_subdirectory(src/osgTest)
 
