@@ -16,9 +16,9 @@ GL3模式可以使用高级shader进行编程，更好玩，更有意思，以�
 	
 - 基础篇
 	- 环境搭建
-		- [osg gl3 模式编译](https://github.com/longlongwaytogo/LearnOsgGL3/tree/main/docs/a-base/01-01-环境搭建.md)
-		- 基于osg gl3的环境搭建
-		- 基于osg gl3的基本设置
+		- [osg gl3 模式编译](docs/a-base/01-01-环境搭建.md)
+		- [基于osg gl3的环境搭建](docs/a-base/01-02-osgSimplegl3.md)
+		- [基于osg gl3的基本设置](docs/a-base/01-03-osgSimplegl3-2.md)
 		- 兼容osg早期顶点属性格式的输入布局
 		- shader调试功能
 	    - renderdoc使用

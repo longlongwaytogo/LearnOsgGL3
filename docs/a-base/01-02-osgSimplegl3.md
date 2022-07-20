@@ -1,4 +1,4 @@
-# osgSimplegl3结合RenderDoc工具
+# osgSimplegl3例子分析
 
 	author: longlongwaytogo
 	date: 2022/07/12	
