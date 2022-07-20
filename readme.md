@@ -38,7 +38,7 @@ GL3模式可以使用高级shader进行编程，更好玩，更有意思，以�
 		- geometry shader
 	
 - 高级功能：
-	- 法线可视化
+	- [法线可视化](docs/d-advanced/01-normalVisualizer.md)
 	- bpr效果
 	- 环境纹理
 	- 动画
@@ -52,3 +52,9 @@ GL3模式可以使用高级shader进行编程，更好玩，更有意思，以�
 	- image
 	- texture
 	- no window rtt
+
+
+
+个人公众号
+![img](https://github.com/longlongwaytogo/LearnOsgGL3/blob/main/docs/a-base/images/qrcode.bmp)
+![img](docs/a-base/images/qrcode.bmp)
