@@ -1,9 +1,14 @@
- // geometry shader 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//@file: normal.geom
+//@brief: geometry shader for show normal line
+//@author：longlongwaytogo
+//@date: 2022/07/21
+
 #version 330  
 uniform mat4 osg_ModelViewProjectionMatrix;  
 uniform mat3 osg_NormalMatrix;
 uniform float normal_length;
-uniform bool vetexNormal; // 顶点法线还是面法线
+uniform int show_normal_mode;
 in vec3 local_normal[];
 out vec4 color;
 layout(triangles) in;
@@ -12,7 +17,8 @@ layout(line_strip,max_vertices = 8) out;
 void main()  
 {  
 	//float normal_length = 1.0;
-	if(true)
+	// 逐顶点法线
+	if((show_normal_mode & 0x1) > 0)
 	{
 		for(int i = 0; i < gl_in.length(); i++)
 		{
@@ -29,7 +35,9 @@ void main()
 			EndPrimitive();
 		}
 	}
-	else
+
+	// 面的平均法线
+	if((show_normal_mode & 0x2) > 0)
 	{
 		int n = gl_in.length();
 		if(n >2)
@@ -52,37 +60,32 @@ void main()
 
 			EndPrimitive();
 
-		}
-		 
-			
-		 
+		}		 
 	}
-{
- // face normal
-	vec3 P0 = gl_in[0].gl_Position.xyz;
-	vec3 P1 = gl_in[1].gl_Position.xyz;
-	vec3 P2 = gl_in[2].gl_Position.xyz;
-	 // Center of the triangle
-	 vec3 P = (P0+P1+P2) / 3.0;
 
-	vec3 V0 = P0 - P1;
-	vec3 V1 = P2 - P1;
-  
-	  vec3 N = cross(V1, V0);
-	  N = normalize(N);
+	// 叉乘法线
+	if((show_normal_mode & 0x4) > 0)
+	{
+		// face normal
+		vec3 P0 = gl_in[0].gl_Position.xyz;
+		vec3 P1 = gl_in[1].gl_Position.xyz;
+		vec3 P2 = gl_in[2].gl_Position.xyz;
+		// Center of the triangle
+		vec3 P = (P0+P1+P2) / 3.0;
 
-	gl_Position = osg_ModelViewProjectionMatrix * vec4(P, 1.0);
-	color = vec4(0, 0, 0, 1);
-	EmitVertex();
+		vec3 V0 = P0 - P1;
+		vec3 V1 = P2 - P1;
   
-	gl_Position = osg_ModelViewProjectionMatrix * vec4(P + N * normal_length, 1.0);
-	color = vec4(1, 0, 0, 1);
-	EmitVertex();
-	EndPrimitive();
-  }
-  
- 
-  
+		vec3 N = cross(V1, V0);
+		N = normalize(N);
 
-	
+		gl_Position = osg_ModelViewProjectionMatrix * vec4(P, 1.0);
+		color = vec4(0, 0, 0, 1);
+		EmitVertex();
+  
+		gl_Position = osg_ModelViewProjectionMatrix * vec4(P + N * normal_length, 1.0);
+		color = vec4(1, 0, 0, 1);
+		EmitVertex();
+		EndPrimitive();
+	}
 }  

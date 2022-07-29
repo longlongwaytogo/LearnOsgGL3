@@ -20,6 +20,7 @@
 #include <osg/GL>
 #include <osg/MatrixTransform>
 #include <osg/Depth>
+#include <osg/Switch>
 #include <osgUtil/Optimizer>
 
 void configureShaderShowLine(osg::StateSet* stateSet)
@@ -65,15 +66,20 @@ void configureShaderShowNormal(osg::StateSet* stateSet)
         "#version 330 \n"
         "uniform mat4 osg_ModelViewProjectionMatrix; \n"
         "uniform mat3 osg_NormalMatrix; \n"
+        "uniform mat4 osg_ViewMatrixInverse;\n"
+        "uniform mat4 osg_ModelViewMatrix;\n"
         "in vec4 osg_Vertex; \n"
         "in vec3 osg_Normal; \n"
         "out vec4 color;\n"
         "void main() \n"
         "{ \n"
-        "   vec3 ecNormal = normalize( osg_NormalMatrix * osg_Normal ); \n"
+        "   vec3 ecNormal;// = normalize( osg_NormalMatrix * osg_Normal ); \n"
         "   gl_Position = osg_ModelViewProjectionMatrix * osg_Vertex; \n"
-        "   vec4 pos = gl_Position/gl_Position.w;\n"
+        //"   vec4 pos = gl_Position/gl_Position.w;\n"
         // "   color =  vec4(pos.xyz,1.0);\n"
+        "   mat4 modelMatrix = osg_ViewMatrixInverse * osg_ModelViewMatrix;\n"
+        "   ecNormal = mat3(modelMatrix) * osg_Normal;\n"
+        "   ecNormal = ecNormal*0.5 + 0.5;\n"
         "   color =  vec4(ecNormal,1.0);\n"
         "} \n";
 
@@ -211,6 +217,123 @@ osg::Camera* createNormalCamera()
 
     return pCamera;
 }
+enum ShowNormalLineType
+{
+    VERTEX_LINE     = 1, // 顶点法线
+    VERTEX_LINE_AVG = 2, // 平均法线
+    FACE_LINE       = 4, // 面法线
+};
+enum {
+    ROOT_NODE,
+    ORIGIN_NODE,
+    SWITCH_NODE,// 原始node和颜色法线
+    LINES_NODE, // 线框模型
+    NORMAL_LINE_NODE, // 法线显示节点
+
+};
+class Switcher : public osgGA::GUIEventHandler
+{
+public:
+
+    std::map<int, osg::ref_ptr<osg::Node>> _lists;
+    virtual bool handle(osgGA::Event* event, osg::Object* object, osg::NodeVisitor* nv)
+    {
+        if (osgGA::GUIEventAdapter* ea = dynamic_cast<osgGA::GUIEventAdapter*>(event))
+        {
+            if (ea->getEventType() == osgGA::GUIEventAdapter::KEYUP)
+            {
+                switch (ea->getKey())
+                {
+                case osgGA::GUIEventAdapter::KEY_F2: // 原始模型效果
+                {
+                    static int nShowMode = 0;
+                    nShowMode++;
+                    switch (nShowMode % 3)
+                    {
+                        case 0:
+                        {
+                            _lists[SWITCH_NODE]->asSwitch()->setSingleChildOn(0);
+                            break;
+                        }
+                        case 1:
+                        {
+                            _lists[SWITCH_NODE]->asSwitch()->setSingleChildOn(1);
+                            break;
+                        }
+                        case 2:
+                        {
+                            _lists[SWITCH_NODE]->asSwitch()->setAllChildrenOff();
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case osgGA::GUIEventAdapter::KEY_F3: // line strip
+                {
+                    static bool bShowLine = true;
+                    bShowLine = !bShowLine;
+                    if (bShowLine)
+                        _lists[LINES_NODE]->setNodeMask(~0u);
+                    else
+                        _lists[LINES_NODE]->setNodeMask(0u);
+                    break;
+                }
+                case osgGA::GUIEventAdapter::KEY_F4: // 顶点法线
+                {
+
+                    static int nShowNormalMode = 0;
+                    nShowNormalMode++;
+
+                    _lists[NORMAL_LINE_NODE]->setNodeMask(~0u);
+                    osg::StateSet* pSS = _lists[NORMAL_LINE_NODE]->getOrCreateStateSet();
+                    switch (nShowNormalMode % 5)
+                    {
+                    case 0:
+                    {
+                        int show_normal_mode = VERTEX_LINE;
+                        pSS->getUniform("show_normal_mode")->set(show_normal_mode);
+                        break;
+                    }
+
+                    case 1:
+                    {
+                        int show_normal_mode = VERTEX_LINE_AVG;
+                        pSS->getUniform("show_normal_mode")->set(show_normal_mode);
+                        break;
+                    }
+                    case 2:
+                    {
+                        int show_normal_mode = FACE_LINE;
+                        pSS->getUniform("show_normal_mode")->set(show_normal_mode);
+
+                        break;
+                    }
+                    case 3:
+                    {
+                        int show_normal_mode = VERTEX_LINE | VERTEX_LINE_AVG | FACE_LINE;
+                        pSS->getUniform("show_normal_mode")->set(show_normal_mode);
+                        break;
+                    }
+                    case 4:
+                    {
+                        _lists[NORMAL_LINE_NODE]->setNodeMask(0u);
+                        break;
+                    }
+                    default:
+                        break;
+                    }
+                    break;
+                }
+               
+                default:
+                    break;
+                }
+            }
+
+        }
+        return false;
+    }
+};
 int main( int argc, char** argv )
 {
     osg::setNotifyLevel(osg::NOTICE);
@@ -226,10 +349,10 @@ int main( int argc, char** argv )
     osgUtil::Optimizer optimizer;
     optimizer.optimize(root.get(), osgUtil::Optimizer::ALL_OPTIMIZATIONS  | osgUtil::Optimizer::TESSELLATE_GEOMETRY);
 
-    const int width( 800 ), height( 450 );
+    const int width( 1024 ), height( 768 );
     const std::string version( "3.3" );
     osg::ref_ptr< osg::GraphicsContext::Traits > traits = new osg::GraphicsContext::Traits();
-    traits->x = 20; traits->y = 30;
+    traits->x = 0; traits->y = 0;
     traits->width = width; traits->height = height;
     traits->windowDecoration = true;
     traits->doubleBuffer = true;
@@ -255,26 +378,47 @@ int main( int argc, char** argv )
     // Unlike OpenGL, OSG viewport does *not* default to window dimensions.
     cam->setViewport( new osg::Viewport( 0, 0, width, height ) );
   
-    osg::Camera* pNormalCamera = createNormalCamera();
-    osg::MatrixTransform* scribe = new osg::MatrixTransform;
-    scribe->setMatrix(osg::Matrix::scale(1.02, 1.02, 1.02));
+    model->getOrCreateStateSet()->setAttributeAndModes(new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK, 
+        osg::PolygonMode::FILL));
+
+    osg::Switch* pSwitchNode = new osg::Switch;
+    osg::MatrixTransform* original = new osg::MatrixTransform; // 原始效果
+    osg::MatrixTransform* colorNormalNode = new osg::MatrixTransform; // 颜色法线
+    original->addChild(model);
+    colorNormalNode->addChild(model);
+    configureShaders(original->getOrCreateStateSet());
+    configureShaderShowNormal(colorNormalNode->getOrCreateStateSet());
+    pSwitchNode->addChild(original);
+    pSwitchNode->addChild(colorNormalNode);
+
+    osg::MatrixTransform* scribe = new osg::MatrixTransform; // 线框显示模式
     scribe->addChild(model);
-    scribe->getOrCreateStateSet()->setAttributeAndModes(new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE),osg::StateAttribute::OVERRIDE);
-    scribe->getOrCreateStateSet()->setAttributeAndModes(new osg::Depth(osg::Depth::LEQUAL,0.0,1.0,false));
-    root->addChild(model);
-    root->addChild(scribe);
-    float normal_length = 0.5f;
-    root->getOrCreateStateSet()->addUniform(new osg::Uniform("normal_length", normal_length));
-    configureShaderShowNormal(root->getOrCreateStateSet());
+    scribe->setMatrix(osg::Matrix::scale(1.02, 1.02, 1.02));
+    scribe->getOrCreateStateSet()->setAttributeAndModes(new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK, 
+        osg::PolygonMode::LINE), osg::StateAttribute::OVERRIDE);
+    scribe->getOrCreateStateSet()->setAttributeAndModes(new osg::Depth(osg::Depth::LEQUAL, 0.0, 1.0, false));
     configureShaderShowLine(scribe->getOrCreateStateSet());
-    model->getOrCreateStateSet()->setAttributeAndModes(new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL));
-    root->addChild(pNormalCamera);
+
+    osg::Camera* pNormalCamera = createNormalCamera();
+    float normal_length = 0.4f;
+    pNormalCamera->getOrCreateStateSet()->addUniform(new osg::Uniform("normal_length", normal_length));
+    int show_normal_mode = 0;
+    pNormalCamera->getOrCreateStateSet()->addUniform(new osg::Uniform("show_normal_mode", show_normal_mode));
     pNormalCamera->addChild(model);
- 
+
+    root->addChild(pSwitchNode);
+    root->addChild(scribe);
+    root->addChild(pNormalCamera);
    
+    osg::ref_ptr<Switcher> swr = new Switcher;
+    swr->_lists[ORIGIN_NODE] = model;
+    swr->_lists[ROOT_NODE] = root;
+    swr->_lists[LINES_NODE] = scribe;
+    swr->_lists[SWITCH_NODE] = pSwitchNode;
+    swr->_lists[NORMAL_LINE_NODE] = pNormalCamera;
  
     viewer.setSceneData( root );
-
+    viewer.addEventHandler(swr);
     return( viewer.run() );
 }
 
