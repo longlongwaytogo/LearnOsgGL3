@@ -1,12 +1,7 @@
-// This is public domain software and comes with
-// absolutely no warranty. Use of public domain software
-// may vary between counties, but in general you are free
-// to use and distribute this software for any purpose.
-
-
-// Example: OSG using an OpenGL 3.0 context.
-// The comment block at the end of the source describes building OSG
-// for use with OpenGL 3.x.
+//--------------------------------------------------------------------------------------
+// Copyright (c) longlongwaytogo. All rights reserved.
+// longlongway2012@hotmail.com
+//--------------------------------------------------------------------------------------
 
 #include <osgViewer/Viewer>
 #include <osgDB/ReadFile>
@@ -66,7 +61,6 @@ void configureShaders( osg::StateSet* stateSet )
 int main( int argc, char** argv )
 {
     osg::ArgumentParser arguments( &argc, argv );
-
     osg::ref_ptr<osg::Node> root = osgDB::readRefNodeFiles( arguments );
     if( root == NULL )
     {

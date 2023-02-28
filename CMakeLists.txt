@@ -1,3 +1,8 @@
+#--------------------------------------------------------------------------------------
+# Copyright (c) longlongwaytogo. All rights reserved.
+# longlongway2012@hotmail.com
+#--------------------------------------------------------------------------------------
+
 cmake_minimum_required(VERSION 3.0)
 project(LearnOsgGL3)
 
@@ -93,12 +98,12 @@ ${OSGFX_LIBRARIES}
  set(MY_CUSTOM_PATH ${OpenSceneGraph_BINARY_ROOT}/bin)
  set(MY_PATH "PATH=${MY_CUSTOM_PATH};%PATH%")
  message(STATUS "modulePath:${MY_CUSTOM_PATH}")
- 
+ include(GenerateExportHeader)
 # add cmake module
-
 add_custom_target("cmake_module" SOURCES cmake/common.cmake cmake/findCustomOSG.cmake)
 # test
 add_subdirectory(src/osgTest)
+add_subdirectory(src/common)
 
 # base
 add_subdirectory(src/a-base/01-osgSimple3)
@@ -114,4 +119,9 @@ add_subdirectory(src/b-sim/02-clip)
 add_subdirectory(src/d-advanced/01-normalVisualizer)
 # geometry shader test
 add_subdirectory(src/d-advanced/03-gemoetry-buttlefly)
+
+
+# graphicAlgorithm
+add_subdirectory(src/e-graphicAlgorithm/EffectCompositor)
+add_subdirectory(src/e-graphicAlgorithm/001_ReflectiveShadowMap)
 
