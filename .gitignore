@@ -32,3 +32,4 @@
 *.app
 /bin
 /build
+*_export.h

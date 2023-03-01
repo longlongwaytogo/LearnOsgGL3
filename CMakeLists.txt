@@ -124,4 +124,5 @@ add_subdirectory(src/d-advanced/03-gemoetry-buttlefly)
 # graphicAlgorithm
 add_subdirectory(src/e-graphicAlgorithm/EffectCompositor)
 add_subdirectory(src/e-graphicAlgorithm/001_ReflectiveShadowMap)
+add_subdirectory(src/e-graphicAlgorithm/Frame)
 

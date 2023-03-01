@@ -1,8 +1,3 @@
-# EffectorPositoer 位于osgExtern子目录下
-SET(CPP_RELATIVE_PATH_NAME "osgExtern")
-SET(H_RELATIVE_PATH_NAME "osgExtern")
-
-
 
 set(TargetName "EffectCompositor")
 CreateLib(${TargetName} "e-graphicAlgorithm")

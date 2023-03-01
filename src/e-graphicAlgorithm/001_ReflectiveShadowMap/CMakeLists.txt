@@ -8,4 +8,5 @@ include_directories( ${CMAKE_SOURCE_DIR}
 
 target_link_libraries(${TargetName}
 common
+Frame
 EffectCompositor)
