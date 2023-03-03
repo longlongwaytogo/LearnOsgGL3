@@ -1,0 +1,6 @@
+﻿enum class  PassType {
+	PASS_GBUFFER,
+	PASS_RSMBUFFER,
+	PASS_RENDERWITHRSM,
+	PASS_QUAD,
+};

@@ -4,3 +4,9 @@
 
  http://yangwc.com/2021/06/12/SSR/
  https://www.cnblogs.com/KillerAery/p/15490834.html
+
+ 本算法参考自好友[Monica的小甜甜]分享的opengl例子，感谢好友的分享和激励。
+ 
+ 
+ 
+
