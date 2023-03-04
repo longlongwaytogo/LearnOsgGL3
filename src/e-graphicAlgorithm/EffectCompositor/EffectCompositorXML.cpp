@@ -1,4 +1,4 @@
-#include <osg/io_utils>
+Ôªø#include <osg/io_utils>
 #include <osg/FrameBufferObject>
 #include <osg/ImageStream>
 #include <osg/Depth>
@@ -31,12 +31,12 @@ struct UniformAnimator : public osg::Uniform::Callback
 {
     virtual void operator()( osg::Uniform* uniform, osg::NodeVisitor* nv )
     {
-        // 1. ªÒ»°œµÕ≥‘À––ƒ£ƒ‚ ±º‰
+        // 1. Ëé∑ÂèñÁ≥ªÁªüËøêË°åÊ®°ÊãüÊó∂Èó¥
         double time = nv->getFrameStamp()->getSimulationTime();
         if ( loop )
         {
             double modulated_time = (time - startTime) / duration;
-            double fraction_part = modulated_time - floor(modulated_time); // ªÒ»°–° ˝≤ø∑÷
+            double fraction_part = modulated_time - floor(modulated_time); // Ëé∑ÂèñÂ∞èÊï∞ÈÉ®ÂàÜ
             time = startTime + fraction_part * duration;
         }
         
@@ -63,9 +63,9 @@ struct UniformAnimator : public osg::Uniform::Callback
     : startTime(0.0), duration(d), loop(l) {}
     
     std::map<double, T> keyframes ;
-    double startTime; // ø™ º ±º‰
-    double duration; // ÷‹∆⁄
-    bool loop;      //   «∑Ò—≠ª∑
+    double startTime; // ÂºÄÂßãÊó∂Èó¥
+    double duration; // Âë®Êúü
+    bool loop;      //  ÊòØÂê¶Âæ™ÁéØ
 };
 
 static bool isXMLNodeType( osgDB::XmlNode* xmlNode )
@@ -207,7 +207,7 @@ osg::Camera* EffectCompositor::createPassFromXML( osgDB::XmlNode* xmlNode,const 
     osg::Camera* camera = createNewPass( passType, name ,stage);
 	if(camera)
 	{
-        RegisterCameraMarker(camera);
+        registerCameraMarker(camera);
 	}
     osg::StateSet* stateset = camera->getOrCreateStateSet();
     osg::ref_ptr<osg::Program> program = new osg::Program;
@@ -426,8 +426,7 @@ osg::Camera* EffectCompositor::createPassFromXML( osgDB::XmlNode* xmlNode,const 
                         drawable->setDrawCallback(new DrawableCallbackMarker());
                     }
                 }
-            }
-            
+            } 
         }
     }
     return camera;

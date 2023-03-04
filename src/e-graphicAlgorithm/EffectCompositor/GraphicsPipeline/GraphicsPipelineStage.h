@@ -1,8 +1,8 @@
-//////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////
 //@file: GraphicPipelineStage.h
-//@brif: äÖÈ¾¹ÜÏß½×¶Î£¨²½Öè£©£¬°üº¬¶à¸öäÖÈ¾Á÷³Ì£¬ÓÃÓÚ·Ö½âäÖÈ¾µÄ²»Í¬Á÷³Ì
-//       Ò»¸öäÖÈ¾½×¶Î£¬¼´Ò»¸ö¼¼Êõ£¨technique£©£¬Ò»¸ö¼¼Êõ°üº¬¶à¸öäÖÈ¾Í¨µÀ£¨pass£©
-//      Ò»¸öpass¶ÔÓ¦Ò»¸öcameraäÖÈ¾£¬¿ÉÒÔ³¡¾°äÖÈ¾£¬Ò²¿ÉÒÔÊÇºó´¦ÀíäÖÈ¾µÈ
+//@brif: æ¸²æŸ“ç®¡çº¿é˜¶æ®µï¼ˆæ­¥éª¤ï¼‰ï¼ŒåŒ…å«å¤šä¸ªæ¸²æŸ“æµç¨‹ï¼Œç”¨äºåˆ†è§£æ¸²æŸ“çš„ä¸åŒæµç¨‹
+//       ä¸€ä¸ªæ¸²æŸ“é˜¶æ®µï¼Œå³ä¸€ä¸ªæŠ€æœ¯ï¼ˆtechniqueï¼‰ï¼Œä¸€ä¸ªæŠ€æœ¯åŒ…å«å¤šä¸ªæ¸²æŸ“é€šé“ï¼ˆpassï¼‰
+//      ä¸€ä¸ªpasså¯¹åº”ä¸€ä¸ªcameraæ¸²æŸ“ï¼Œå¯ä»¥åœºæ™¯æ¸²æŸ“ï¼Œä¹Ÿå¯ä»¥æ˜¯åå¤„ç†æ¸²æŸ“ç­‰
 //@author: longlongwaytogo
 //@date: 2021/01/20
 
@@ -14,7 +14,7 @@
 #include <osgDB/XmlParser>
 
 #include "EffectCompositor_export.h"
-#include "GraphicsPipeline/GraphicsPipePass.h"
+#include "GraphicsPipeline/GraphicsPipelinePass.h"
 #include "GraphicsPipeline/GraphicsPipelineStageCallback.h"
 namespace Effect
 {
@@ -25,24 +25,25 @@ namespace Effect
           friend class GraphicsPipelineStageCallback;
         GraphicsPipelineStage(GraphicsPipeline* pipeline,int id,const std::string name,
         GraphicsPipelineStageCallback* callback=nullptr)
-            :m_pipeline(pipeline),m_id(id),m_name(name),m_callback(callback)
+            :m_pipeline(pipeline),m_id(id),m_name(name),m_callback(callback), m_bLoadXml(true)
         {
             if(m_callback)
             {
                 m_callback->setGraphicPipelineStage(this);
+				 
             }
         }
         virtual bool init();
 
         virtual void traverse(osg::NodeVisitor& nv);
 
-        bool addPass(PassData& passData);
+        bool addPass(GraphicsPipelinePass* passData);
 
         virtual bool getPassData( const std::string& name, PassData& data ) const;
 
         PassList& getPassList();
         GraphicsPipeline* getGraphicsPipeline(){ return m_pipeline;}
-   
+		
     protected:
        // GraphicsPipelinePass m_pass;
         int m_id;
@@ -51,5 +52,7 @@ namespace Effect
         osg::ref_ptr<osgDB::XmlNode> _xmlRoot;
         osg::ref_ptr<GraphicsPipelineStageCallback> m_callback;
         PassList m_passList;
+		bool m_bLoadXml;
     };
+   
 }

@@ -1,4 +1,9 @@
+ï»¿//--------------------------------------------------------------------------------------
+// Copyright (c) longlongwaytogo. All rights reserved.
+// longlongway2012@hotmail.com
+//--------------------------------------------------------------------------------------
 
+#include <osg/Notify>
 #include <osgViewer/Viewer>
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
@@ -14,7 +19,8 @@
 
 #include <osgGA/StateSetManipulator>
 #include <osgViewer/ViewerEventHandlers>
-
+#include <EffectCompositor/GraphicsPipeline/CustomPipeline.h>
+#include <EffectCompositor/GLMarker.h>
 #include "app.h"
 #include "utils.h"
 #define USE_GL3 1
@@ -68,32 +74,45 @@ namespace Frame
 
     App::App()
     {
+		m_w = 1024;
+		m_h = 768;
         m_root = new osg::Group;
         m_scene = new osg::Group;
-        m_pipeline = new osg::Group;
+		m_pipeline = new Effect::CustomPipeline;// new Frame::GraphicsPipeline;
         m_viewer = new osgViewer::Viewer;
     }
     bool App::init(int argc, char** argv)
     {
-        osg::ArgumentParser arguments(&argc, argv);
-        osg::ref_ptr<osg::Node> model = osgDB::readRefNodeFiles(arguments);
-        if (model == NULL)
-        {
-            osg::notify(osg::FATAL) << "Unable to load model from command line." << std::endl;
-            model = Frame::getDefaultModel();
-            if(model)
-                m_scene->addChild(model);
-        }
         m_root->addChild(m_pipeline);
         m_pipeline->addChild(m_scene);
-        return initCamera();
+
+		osg::setNotifyLevel(osg::NotifySeverity::ALWAYS);
+        initScene();
+
+        if (m_scene->getNumChildren() == 0)
+        {
+            osg::ArgumentParser arguments(&argc, argv);
+            osg::ref_ptr<osg::Node> model = osgDB::readRefNodeFiles(arguments);
+            if (model == NULL)
+            {
+                osg::notify(osg::FATAL) << "Unable to load model from command line." << std::endl;
+                model = Frame::getDefaultModel();
+                if (model)
+                    m_scene->addChild(model);
+            }
+        }
+       
+		m_pipeline->init();
+         _initCamera();
+		 initCamera();
+		 return true;
     }
     int App::run()
     {
         return(m_viewer->run());
     }
 
-    bool App::initCamera()
+    bool App::_initCamera()
     {
         osgUtil::Optimizer optimizer;
         optimizer.optimize(m_root.get(), osgUtil::Optimizer::ALL_OPTIMIZATIONS | osgUtil::Optimizer::TESSELLATE_GEOMETRY);
@@ -104,23 +123,23 @@ namespace Frame
         //#else
         if (m_root)
         {
-            osgUtil::ShaderGenVisitor shaderGen;
+           /* osgUtil::ShaderGenVisitor shaderGen;
             shaderGen.assignUberProgram(m_root->getOrCreateStateSet());
             m_root->getOrCreateStateSet()->setDefine("GL_LIGHTING");
-            m_root->getOrCreateStateSet()->setDefine("GL_TEXTURE_2D");
+            m_root->getOrCreateStateSet()->setDefine("GL_TEXTURE_2D");*/
         }
 #endif 
-        const int width(1024), height(768);
-        const std::string version("4.3");
+        const int width(m_w), height(m_h);
+        const std::string version("4.5");
         osg::ref_ptr< osg::GraphicsContext::Traits > traits = new osg::GraphicsContext::Traits();
         traits->x = 20; traits->y = 30;
         traits->width = width; traits->height = height;
         traits->windowDecoration = true;
         traits->doubleBuffer = true;
-        traits->glContextVersion = version;
+       // traits->glContextVersion = version;
 #if USE_GL3
-        // Ê¹ÓÃcoreÄ£Ê½£¬Êä³öÉî¶ÈÍ¼£¬±³¾°É«ÊÇºìÉ«µÄ
-        // Ê¹ÓÃ¼æÈÝÄ£Ê½£¬Êä³öµÄÉî¶ÈÍ¼,ÊÇ»ÒÉ«½¥±ä
+        // ä½¿ç”¨coreæ¨¡å¼ï¼Œè¾“å‡ºæ·±åº¦å›¾ï¼ŒèƒŒæ™¯è‰²æ˜¯çº¢è‰²çš„
+        // ä½¿ç”¨å…¼å®¹æ¨¡å¼ï¼Œè¾“å‡ºçš„æ·±åº¦å›¾,æ˜¯ç°è‰²æ¸å˜
         traits->glContextProfileMask = GL_CONTEXT_CORE_PROFILE_BIT;// 0x1;// 
        // traits->glContextProfileMask = 0x1;// GL_CONTEXT_COMPATIBILITY_PROFILE_BIT;// 0x1;// 
 #endif 
@@ -134,16 +153,18 @@ namespace Frame
         }
 
 #if USE_GL3
-        gc->getState()->resetVertexAttributeAlias(false); // ±£Áô¼æÈÝµÄ²¼¾Ö
+        gc->getState()->resetVertexAttributeAlias(false); // ä¿ç•™å…¼å®¹çš„å¸ƒå±€
 #endif 
     // Create a Camera that uses the above OpenGL context.
         osg::Camera* cam = m_viewer->getCamera();
+		cam->setName("MainCameraPass");
         cam->setGraphicsContext(gc.get());
         // Must set perspective projection for fovy and aspect.
-        cam->setProjectionMatrix(osg::Matrix::perspective(30., (double)width / (double)height, 1., 100.));
+        cam->setProjectionMatrix(osg::Matrix::perspective(45., (double)width / (double)height, 1., 100.));
         // Unlike OpenGL, OSG viewport does *not* default to window dimensions.
         cam->setViewport(new osg::Viewport(0, 0, width, height));
 
+		Effect::registerCameraMarker(cam);
         // add the state manipulator
         m_viewer->addEventHandler(new osgGA::StateSetManipulator(m_viewer->getCamera()->getOrCreateStateSet()));
 
@@ -151,19 +172,21 @@ namespace Frame
         m_viewer->addEventHandler(new osgViewer::ThreadingHandler);
 
         // add the window size toggle handler
-        m_viewer->addEventHandler(new osgViewer::WindowSizeHandler);
+        //m_viewer->addEventHandler(new osgViewer::WindowSizeHandler);
 
         // add the stats handler
         m_viewer->addEventHandler(new osgViewer::StatsHandler);
 
         m_viewer->setSceneData(m_root.get());
 
+		//m_viewer->setRunMaxFrameRate(120.0);
+		//m_viewer->setRunFrameScheme(osgViewer::ViewerBase::ON_DEMAND);
         // for non GL3/GL4 and non GLES2 platforms we need enable the osg_ uniforms that the shaders will use,
         // you don't need thse two lines on GL3/GL4 and GLES2 specific builds as these will be enable by default.
         gc->getState()->setUseModelViewAndProjectionUniforms(true);
         gc->getState()->setUseVertexAttributeAliasing(true);
 
-        initScene();
+      
         return  true;
     }
 

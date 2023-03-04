@@ -1,6 +1,6 @@
-//////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////
 //@file: GraphicsPipeline.h
-//@brief: äÖÈ¾¹ÜÏß»ùÀà
+//@brief: æ¸²æŸ“ç®¡çº¿åŸºç±»
 //@autor: longlongwaytogo
 //@date: 2021/01/18
 
@@ -73,7 +73,7 @@ enum GraphicPipelineStateType
 
 };
 
-// »ù´¡µÄäÖÈ¾¹Ü¾Q
+// åŸºç¡€çš„æ¸²æŸ“ç®¡ç¶«
 class EFFECTCOMPOSITOR_API GraphicsPipeline : public  EffectCompositor
 {
 public:
@@ -99,10 +99,10 @@ public:
      /** Create new pass and add it to the end of the pass list */
    /* virtual osg::Camera* createNewPass( PassType type, const std::string& name,GraphicsPipelineStage* stage );*/
 
-       // ÖØĞÂ´Óxmlnode¼ÓÔØ
+       // é‡æ–°ä»xmlnodeåŠ è½½
    bool reLoadFromXmlNode();
 protected:
-    // ¼ÓÔØÎÄ¼ş²¢·µ»Øxmlnode
+    // åŠ è½½æ–‡ä»¶å¹¶è¿”å›xmlnode
      osg::ref_ptr<osgDB::XmlNode> loadXML( const std::string& filename, const osgDB::Options* options = NULL);
 
   

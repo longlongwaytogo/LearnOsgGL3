@@ -1,4 +1,4 @@
-
+﻿
 /*
 *
 *  为OpenGL 添加渲染调试标记
@@ -33,7 +33,7 @@ namespace Effect
 		virtual void  operator() (const osg::Camera &) const ;
 	};
 	
-	EFFECTCOMPOSITOR_API void RegisterCameraMarker(osg::Camera* camera);
+	EFFECTCOMPOSITOR_API void registerCameraMarker(osg::Camera* camera);
 	
 	class EFFECTCOMPOSITOR_API DrawableCallbackMarker :public osg::Drawable::DrawCallback
 	{

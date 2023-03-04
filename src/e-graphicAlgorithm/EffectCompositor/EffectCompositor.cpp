@@ -1,4 +1,4 @@
-#include <osg/io_utils>
+﻿#include <osg/io_utils>
 #include <osg/PolygonMode>
 #include <osg/Geometry>
 #include <osg/View>
@@ -7,6 +7,7 @@
 #include <sstream>
 #include "EffectCompositor"
 #include "GraphicsPipeline/GraphicsPassCullback.h"
+#include "GraphicsPipeline/GraphicsPipelinePass.h"
 #include "common/common.h"
 using namespace Effect;
 
@@ -101,10 +102,11 @@ osg::Camera* EffectCompositor::createNewPass( PassType type, const std::string& 
     newData.name = name;
     newData.pass = camera;
 
+	GraphicsPipelinePass* pass = new GraphicsPipelinePass(newData);
     if(stage)
-        stage->addPass(newData);
+        stage->addPass(pass);
     else
-        getPassList().push_back( newData );
+        getPassList().push_back(pass);
     
     return camera.get();
 }
@@ -114,7 +116,7 @@ bool EffectCompositor::removePass( const std::string& name )
     PassList& passList = getPassList();
     for ( unsigned int i=0; i<passList.size(); ++i )
     {
-        if ( passList[i].name==name )
+        if ( passList[i]->getPassData().name==name )
         {
             passList.erase( getPassList().begin()+i );
             return true;
@@ -128,7 +130,7 @@ bool EffectCompositor::getPassData( const std::string& name, PassData& data ) co
     const PassList& passList = getPassList();
     for ( unsigned int i=0; i<passList.size(); ++i )
     {
-        const PassData& pd = passList[i];
+        const PassData& pd = passList[i]->getPassData();
         if ( pd.name==name )
         {
             data = pd;
@@ -140,19 +142,18 @@ bool EffectCompositor::getPassData( const std::string& name, PassData& data ) co
 
 bool EffectCompositor::setPassIndex( const std::string& name, unsigned int index )
 {
-    PassData passToInsert;
     unsigned int insertIndex = index;
     if ( insertIndex>=getPassList().size() ) return false;
-    
+	osg::ref_ptr<GraphicsPipelinePass> pass;
     PassList& passList = getPassList();
     for ( unsigned int i=0; i<passList.size(); ++i )
     {
-        const PassData& pd = passList[i];
+        const PassData& pd = passList[i]->getPassData();
         if ( pd.name==name )
         {
             if ( i!=insertIndex )
             {
-                passToInsert = pd;
+				pass = passList[i];
                 passList.erase( getPassList().begin()+i );
                 if ( i<insertIndex ) insertIndex--;
             }
@@ -160,9 +161,9 @@ bool EffectCompositor::setPassIndex( const std::string& name, unsigned int index
         }
     }
     
-    if ( passToInsert.pass.valid() )
+    if (pass->getPassData().pass.valid() )
     {
-        passList.insert( passList.begin()+insertIndex, passToInsert );
+        passList.insert( passList.begin()+insertIndex, pass);
         return true;
     }
     return false;
@@ -173,7 +174,7 @@ unsigned int EffectCompositor::getPassIndex( const std::string& name ) const
     const PassList& passList = getPassList();
     for ( unsigned int i=0; i<passList.size(); ++i )
     {
-        if ( passList[i].name==name )
+        if ( passList[i]->getPassData().name==name )
             return i;
     }
     return passList.size();
@@ -184,7 +185,7 @@ bool EffectCompositor::setPassActivated( const std::string& name, bool activated
     PassList& passList = getPassList();
     for ( unsigned int i=0; i<passList.size(); ++i )
     {
-        PassData& pd = passList[i];
+        PassData& pd = passList[i]->getPassData();
         if ( pd.name==name )
         {
             pd.activated = activated;
@@ -199,8 +200,8 @@ bool EffectCompositor::getPassActivated( const std::string& name ) const
     const PassList& passList = getPassList();
     for ( unsigned int i=0; i<passList.size(); ++i )
     {
-        if ( passList[i].name==name )
-            return passList[i].activated;
+        if ( passList[i]->getPassData().name==name )
+            return passList[i]->getPassData().activated;
     }
     return false;
 }
@@ -223,8 +224,8 @@ osg::NodeList EffectCompositor::getCameras( PassType type ) const
     const PassList& passList = getPassList();
     for ( unsigned int i=0; i<passList.size(); ++i )
     {
-        if ( passList[i].type==type )
-            cameras.push_back( passList[i].pass );
+        if ( passList[i]->getPassData().type==type )
+            cameras.push_back( passList[i]->getPassData().pass );
     }
     return cameras;
 }

@@ -1,4 +1,4 @@
-#include "GLMarker.h"
+﻿#include "GLMarker.h"
 #include <osg/GLExtensions>
 namespace Effect
 {
@@ -51,7 +51,7 @@ namespace Effect
 		GLMarker::endGroupMarker();
 		//GLMarker::endGroupMarker();
 	}
-	EFFECTCOMPOSITOR_API void RegisterCameraMarker(osg::Camera* camera)
+	EFFECTCOMPOSITOR_API void registerCameraMarker(osg::Camera* camera)
 	{
 		if (!camera)
 			return;

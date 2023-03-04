@@ -1,5 +1,6 @@
-﻿#version 430 core
-layout(location = 0) vec4	_Position;
+﻿#version 330 compatibility 
+
+layout(location = 0) in vec4 _Position;
 layout(location = 2) in vec3 _Normal;
 layout(location = 8) in vec2 _TexCoord;
 
@@ -19,7 +20,7 @@ out vec3 v2f_FragPosInViewSpace;
 void main()
 {
 	vec4 FragPosInWorldSpace = osg_ViewMatrixInverse*osg_ModelViewMatrix * _Position;
-	gl_Position = u_LightVPMatrix * FragPosInWorldSpace;
+	gl_Position = osg_ModelViewProjectionMatrix * _Position;//FragPosInWorldSpace;
 	v2f_TexCoords = _TexCoord;
 	v2f_Normal = mat3(osg_NormalMatrix) * _Normal;
 	v2f_FragPosInViewSpace = (osg_ModelViewMatrix * _Position).xyz;

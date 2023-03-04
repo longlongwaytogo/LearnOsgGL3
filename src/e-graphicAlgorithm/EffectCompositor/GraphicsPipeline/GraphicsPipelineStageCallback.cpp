@@ -1,7 +1,9 @@
-
+ï»¿
 #include "GraphicsPipeline/GraphicsPipelineStageCallback.h"
 #include "GraphicsPipeline/GraphicsPipelineStage.h"
 #include "GraphicsPipeline/GraphicsPipeline.h"
+#include "GraphicsPipeline/GraphicsPipelinePass.h"
+#include "GLMarker.h"
 #include "osg/Texture2D"
 #include <osgdb/ReadFile>
   
@@ -11,15 +13,40 @@
 #endif 
 namespace Effect
 {
-
-    void GraphicsPipelineStageCallback::traverse(GraphicsPipelineStage* node,osg::NodeVisitor& nv)
+	void GraphicsPipelineStageCallback::setGraphicPipelineStage(GraphicsPipelineStage* stage)
+	{
+		_pStage = stage;
+		_pStage->m_bLoadXml = m_bLoadXml;
+	}
+	bool GraphicsPipelineStageCallback::init()
+	{
+		for (auto itr = _pStage->getPassList().begin(); itr != _pStage->getPassList().end(); itr++)
+		{
+			(*itr)->init();
+		}
+		return true;
+	}
+	bool GraphicsPipelineStageCallback::update()
+	{
+		for (auto itr = _pStage->getPassList().begin(); itr != _pStage->getPassList().end(); itr++)
+		{
+			(*itr)->update();
+		}
+		return true;
+	}
+	void GraphicsPipelineStageCallback::traverse(GraphicsPipelineStage* node,osg::NodeVisitor& nv)
     {
         if(!node) return ;
 
+		if (osg::NodeVisitor::CULL_VISITOR == nv.getVisitorType())
+		{
+			update();
+		}
         for(auto itr =  node->getPassList().begin(); itr != node->getPassList().end(); itr++)
         {
-            if(itr->pass && itr->activated)
-                itr->pass->accept(nv);
+			PassData& data = (*itr)->getPassData();
+			if (data.pass && data.activated)
+				data.pass->accept(nv);
         }
     }
 
@@ -153,7 +180,7 @@ bool TiledShadingCallback::init()
 
 			// Create the scene graph and start the viewer
 			pass->insertChild(0, sourceNode);
-			pass->setViewport(0, 0, 0, 0); // ²»»æÖÆscreen£¬Ö»¼ÆËãcompute×ÅÉ«Æ÷½á¹û
+			pass->setViewport(0, 0, 0, 0); // ä¸ç»˜åˆ¶screenï¼Œåªè®¡ç®—computeç€è‰²å™¨ç»“æžœ
 										   /* pass->addChild(screenQuad);*/
 #endif 
 		}
@@ -216,7 +243,7 @@ bool TiledShadingCallback::init()
 #if 1
 			pass->insertChild(0, sourceNode);
 			//pass->replaceChild(0, sourceNode);
-			pass->setViewport(0, 0, 0, 0); // ²»»æÖÆscreen£¬Ö»¼ÆËãcompute×ÅÉ«Æ÷½á¹û
+			pass->setViewport(0, 0, 0, 0); // ä¸ç»˜åˆ¶screenï¼Œåªè®¡ç®—computeç€è‰²å™¨ç»“æžœ
 										   /* pass->addChild(screenQuad);*/
 #else 
 			pass->setRenderTargetImplementation(osg::Camera::FRAME_BUFFER);
@@ -227,6 +254,86 @@ bool TiledShadingCallback::init()
 	}
 #endif 
 	return true;
+}
+osg::Camera* SceneStageCallback::createNewPass(PassType type, const std::string& name)
+{
+	if (!_pStage)
+		return nullptr;
+	osg::Camera* camera = _pStage->getGraphicsPipeline()->createNewPass(type, name, _pStage);
+
+	if (camera)
+	{
+		registerCameraMarker(camera);
+	}
+	return camera;
+}
+
+void SceneStageCallback::registerSharedData(const std::string& name, osg::Texture* tex)
+{
+	tex->setName(name);
+	_pStage->getGraphicsPipeline()->setTexture(name, tex);
+}
+osg::Texture* SceneStageCallback::getShaderedData(const std::string& name)
+{
+	return _pStage->getGraphicsPipeline()->getTexture(name);
+}
+void SceneStageCallback::attachCamera(osg::Camera* camera,const std::initializer_list<osg::ref_ptr<osg::Texture>>& vioTextureAttachments)
+{
+	int numAttached = 0;
+	for (auto& e : vioTextureAttachments)
+	{
+		ETextureAttachmentType  type = ETextureAttachmentType::ColorTexture;
+		type = getTextureAttatchmentType(e);
+		osg::Camera::BufferComponent bc = osg::Camera::COLOR_BUFFER;
+		switch (type)
+		{
+			case ETextureAttachmentType::ColorTexture:
+				bc = (osg::Camera::BufferComponent)(osg::Camera::COLOR_BUFFER0 + numAttached++);
+				break;
+			case ETextureAttachmentType::DepthTexture:
+				bc = osg::Camera::DEPTH_BUFFER;
+				break;
+			case ETextureAttachmentType::DepthAndStencilTexture:
+				bc = osg::Camera::PACKED_DEPTH_STENCIL_BUFFER;
+				break;
+			case ETextureAttachmentType::StencilTexture:
+				bc = osg::Camera::STENCIL_BUFFER;
+				break;
+
+			case ETextureAttachmentType::CubeDepthTexture: // cubemapBuffer
+			case ETextureAttachmentType::DepthArrayTexture:
+			{
+				_ASSERT(0);// todo
+			}
+					break;
+		default:
+			bc = osg::Camera::COLOR_BUFFER;
+		}
+	
+		camera->attach(bc, e.get());
+	}
+	if (!numAttached)
+	{
+		camera->setRenderOrder(osg::Camera::NESTED_RENDER);
+		camera->setClearMask(0);
+		
+		if (camera->getNumChildren() > 0)
+		{
+			if (auto geode = camera->getChild(0)->asGeode())
+			{
+				if (geode->getNumChildren() > 0)
+				{
+					if (auto drawable = geode->getChild(0)->asDrawable())
+					{
+						drawable->setDrawCallback(new DrawableCallbackMarker());
+						drawable->setName(camera->getName());
+					}
+				}
+			}
+		}
+		// Note that FBO should be changed back to FRAME_BUFFER for handling camera resizing
+		camera->setRenderTargetImplementation(osg::Camera::FRAME_BUFFER);
+	}
 }
 }
 

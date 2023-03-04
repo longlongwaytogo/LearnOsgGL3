@@ -1,4 +1,4 @@
-﻿#version 430
+﻿#version 330  compatibility 
 in vec2 v2f_TexCoords;
 in vec3 v2f_Normal;
 in vec3 v2f_FragPosInViewSpace;
@@ -6,8 +6,7 @@ in vec3 v2f_FragPosInViewSpace;
 layout(location = 0) out vec4 Albedo_;
 layout(location = 1) out vec4 Normal_;
 layout(location = 2) out vec4 Positon_;
-
-uniform sampler2D u_DiffuseTexture;
+  uniform sampler2D u_DiffuseTexture;
 
 void main()
 {

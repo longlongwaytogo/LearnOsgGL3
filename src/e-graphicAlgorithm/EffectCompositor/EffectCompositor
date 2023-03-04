@@ -1,4 +1,4 @@
-#ifndef OSG_EFFECTCOMPOSITOR
+﻿#ifndef OSG_EFFECTCOMPOSITOR
 #define OSG_EFFECTCOMPOSITOR
 
 #include <osg/Geode>
@@ -9,7 +9,7 @@
 #include <osgDB/XmlParser>
 
 #include "EffectCompositor_Export.h"
-#include "GraphicsPipeline/GraphicsPipePass.h"
+#include "GraphicsPipeline/GraphicsPipelinePass.h"
 #include "GraphicsPipeline/GraphicsPipelineStage.h"
 
 namespace Effect
@@ -226,12 +226,13 @@ public:
     
 protected:
     osg::Geode* createScreenQuad( float width, float height, float scale=1.0f );
+
     void traverseAllPasses( osg::NodeVisitor& nv )
     {
         PassList& passList = getPassList();
         for ( unsigned int i=0; i<passList.size(); ++i )
         {
-            PassData& data = passList[i];
+            PassData& data = passList[i]->getPassData();
             if ( data.activated && data.pass.valid() )
                 data.pass->accept( nv );
         }

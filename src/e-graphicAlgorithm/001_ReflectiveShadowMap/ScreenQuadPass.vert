@@ -1,4 +1,4 @@
-﻿#version 430 core
+﻿#version 330  
 layout(location = 0) in vec4 osg_Vertex;
 layout(location = 2) in vec3 osg_Normal;
 layout(location = 8) in vec4 osg_MultTexCoord0;
