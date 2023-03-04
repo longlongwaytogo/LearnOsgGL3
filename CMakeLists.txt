@@ -1,4 +1,4 @@
-#--------------------------------------------------------------------------------------
+﻿#--------------------------------------------------------------------------------------
 # Copyright (c) longlongwaytogo. All rights reserved.
 # longlongway2012@hotmail.com
 #--------------------------------------------------------------------------------------
@@ -9,7 +9,8 @@ project(LearnOsgGL3)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(use_gl3 "use gl3" ON)
-
+ 
+set(CMAKE_CXX_STANDARD 17)
 cmake_policy(SET CMP0074 NEW)
 
 set(OpenSceneGraph_ROOT "" CACHE PATH "osg root path")
@@ -20,7 +21,7 @@ if(NOT OpenSceneGraph_ROOT OR NOT OpenSceneGraph_BINARY_ROOT)
 endif()
 SET( include_dir "")
 
-message(STATUS "modulePath:${CMAKE_MODULE_PATH}")
+#message(STATUS "modulePath:${CMAKE_MODULE_PATH}")
 
 #EXECUTABLE_OUTPUT_PATH
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -69,16 +70,16 @@ LINK_DIRECTORIES(
 	 
 
 
-MESSAGE("${OSGLIBPATH}")
-MESSAGE(-----------------------------------)
-MESSAGE("include:${OPENSCENEGRAPH_INCLUDE_DIRS}")
-MESSAGE(-----------------------------------)
-MESSAGE("${OPENSCENEGRAPH_LIBRARIES}")
-MESSAGE(-----------------------------------)
+#MESSAGE("${OSGLIBPATH}")
+#MESSAGE(-----------------------------------)
+#MESSAGE("include:${OPENSCENEGRAPH_INCLUDE_DIRS}")
+#MESSAGE(-----------------------------------)
+#MESSAGE("${OPENSCENEGRAPH_LIBRARIES}")
+#MESSAGE(-----------------------------------)
 # MESSAGE( ${OPENTHREADS_LIBRARIES_DIRS} )
 
-MESSAGE("LINK_LIB")
-MESSAGE("${OPENSCENEGRAPH_LIBRARIES}")
+#MESSAGE("LINK_LIB")
+#MESSAGE("${OPENSCENEGRAPH_LIBRARIES}")
 
 LINK_LIBRARIES(${OPENSCENEGRAPH_LIBRARIES})
 
@@ -97,7 +98,7 @@ ${OSGFX_LIBRARIES}
  
  set(MY_CUSTOM_PATH ${OpenSceneGraph_BINARY_ROOT}/bin)
  set(MY_PATH "PATH=${MY_CUSTOM_PATH};%PATH%")
- message(STATUS "modulePath:${MY_CUSTOM_PATH}")
+ #message(STATUS "modulePath:${MY_CUSTOM_PATH}")
  include(GenerateExportHeader)
 # add cmake module
 add_custom_target("cmake_module" SOURCES cmake/common.cmake cmake/findCustomOSG.cmake)
@@ -123,6 +124,6 @@ add_subdirectory(src/d-advanced/03-gemoetry-buttlefly)
 
 # graphicAlgorithm
 add_subdirectory(src/e-graphicAlgorithm/EffectCompositor)
-add_subdirectory(src/e-graphicAlgorithm/001_ReflectiveShadowMap)
 add_subdirectory(src/e-graphicAlgorithm/Frame)
+add_subdirectory(src/e-graphicAlgorithm/001_ReflectiveShadowMap)
 

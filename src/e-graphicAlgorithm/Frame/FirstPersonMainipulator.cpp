@@ -65,28 +65,50 @@ void Frame::FirstPersonManipulator::customKeyDown()
 	float len = front.length();
 	right.normalize();
 	front.normalize();
-	double speed = m_deltaTime * m_speed;
-	printf("speed:%f\n", speed);
+	float a = 1.0;
+	if (KEY_DOWN(VK_SHIFT))
+		a = 1.4;
+	double speed = m_deltaTime * m_speed * a;
 	 
-	if(KEY_DOWN(VK_LEFT))
+	if(KEY_DOWN('a') || KEY_DOWN('A') || KEY_DOWN(VK_LEFT))
 	{
 		eye += -right * speed;
 		center = eye + front * len;
 	}
-	if (KEY_DOWN(VK_RIGHT))
+	if (KEY_DOWN('d')||KEY_DOWN('D')|| KEY_DOWN(VK_RIGHT))
 	{
 		eye += right * speed;
 		center = eye + front * len;
 	}
-	if (KEY_DOWN(VK_UP))
+	if (KEY_DOWN('w')||KEY_DOWN('W')|| KEY_DOWN(VK_UP))
 	{
 		eye += front * speed;
 		center = eye + front * len;
 	}
-	if (KEY_DOWN(VK_DOWN))
+	if (KEY_DOWN('s')||KEY_DOWN('S')|| KEY_DOWN(VK_DOWN))
 	{
 		eye += -front * speed;
 		center = eye + front * len;
+	}
+	if (KEY_DOWN('q') || KEY_DOWN('Q')) // 上
+	{
+		eye += osg::Vec3(0,0,1) * speed;
+		center = eye + front * len;
+	}
+	if (KEY_DOWN('e') || KEY_DOWN('E')) // 下
+	{
+		eye += -osg::Vec3(0, 0, 1) * speed;
+		center = eye + front * len;
+	}
+
+	if (KEY_DOWN('z') || KEY_DOWN('Z')) // 下
+	{
+		m_speed *= 1.2f;
+	}
+
+	if (KEY_DOWN('c') || KEY_DOWN('C')) // 下
+	{
+		m_speed /= 1.2f;
 	}
 	setTransformation(eye, center, up);
 }

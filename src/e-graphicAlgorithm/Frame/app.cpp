@@ -166,7 +166,15 @@ namespace Frame
 
 		Effect::registerCameraMarker(cam);
         // add the state manipulator
-        m_viewer->addEventHandler(new osgGA::StateSetManipulator(m_viewer->getCamera()->getOrCreateStateSet()));
+		/*
+			_keyEventToggleBackfaceCulling('b'),
+			_keyEventToggleLighting('l'),
+			_keyEventToggleTexturing('t'),
+			_keyEventCyclePolygonMode('w')
+		*/
+		auto stateSetManipulator = new osgGA::StateSetManipulator(m_viewer->getCamera()->getOrCreateStateSet());
+		stateSetManipulator->setKeyEventCyclePolygonMode('p'); // plygon
+		m_viewer->addEventHandler(stateSetManipulator);
 
         // add the thread model handler
         m_viewer->addEventHandler(new osgViewer::ThreadingHandler);
@@ -175,7 +183,9 @@ namespace Frame
         //m_viewer->addEventHandler(new osgViewer::WindowSizeHandler);
 
         // add the stats handler
-        m_viewer->addEventHandler(new osgViewer::StatsHandler);
+		auto statsHandler = new osgViewer::StatsHandler;
+		statsHandler->setKeyEventTogglesOnScreenStats('o');
+        m_viewer->addEventHandler(statsHandler);
 
         m_viewer->setSceneData(m_root.get());
 
