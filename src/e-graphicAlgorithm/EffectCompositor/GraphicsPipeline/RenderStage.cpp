@@ -1,10 +1,10 @@
 ﻿
-#include "GraphicsPipeline/GraphicsPipelineStage.h"
+#include "GraphicsPipeline/RenderStage.h"
 #include "GraphicsPipeline/GraphicsPipeline.h"
 
 namespace Effect
 {
-    bool GraphicsPipelineStage::init()
+    bool RenderStage::init()
     {
         bool bRet = false;
 
@@ -37,7 +37,7 @@ namespace Effect
         return bRet;
     }
 
-    void GraphicsPipelineStage::traverse(osg::NodeVisitor& nv)
+    void RenderStage::traverse(osg::NodeVisitor& nv)
     {
         if(m_callback)
             m_callback->traverse(this,nv);
@@ -52,7 +52,7 @@ namespace Effect
         }
     }
 
-       bool  GraphicsPipelineStage::addPass(GraphicsPipelinePass* pass)
+       bool  RenderStage::addPass(RenderPass* pass)
        {
            for(auto itr = m_passList.begin(); itr != m_passList.end(); itr++)
            {
@@ -62,7 +62,7 @@ namespace Effect
            m_passList.push_back(pass);
            return true;
        }
-        bool GraphicsPipelineStage::getPassData( const std::string& name, PassData& data ) const
+        bool RenderStage::getPassData( const std::string& name, PassData& data ) const
         {
             
          for ( unsigned int i=0; i<m_passList.size(); ++i )
@@ -77,7 +77,7 @@ namespace Effect
          return false;
         }
 
-        Effect::PassList& GraphicsPipelineStage::getPassList()
+        Effect::PassList& RenderStage::getPassList()
         {
             return m_passList;
         }

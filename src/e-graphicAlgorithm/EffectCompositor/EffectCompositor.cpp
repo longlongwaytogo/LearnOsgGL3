@@ -6,8 +6,8 @@
 #include <iostream>
 #include <sstream>
 #include "EffectCompositor"
-#include "GraphicsPipeline/GraphicsPassCullback.h"
-#include "GraphicsPipeline/GraphicsPipelinePass.h"
+#include "GraphicsPipeline/RenderPassCullback.h"
+#include "GraphicsPipeline/RenderPass.h"
 #include "common/common.h"
 using namespace Effect;
 
@@ -52,7 +52,7 @@ EffectCompositor::EffectCompositor( const EffectCompositor& copy, const osg::Cop
 EffectCompositor::~EffectCompositor()
 {
 }
-osg::Camera* EffectCompositor::createNewPass( PassType type, const std::string& name,GraphicsPipelineStage* stage )
+osg::Camera* EffectCompositor::createNewPass( PassType type, const std::string& name,RenderStage* stage )
 {
     osg::ref_ptr<osg::Camera> camera = new osg::Camera;
     camera->setName( name );
@@ -102,7 +102,7 @@ osg::Camera* EffectCompositor::createNewPass( PassType type, const std::string& 
     newData.name = name;
     newData.pass = camera;
 
-	GraphicsPipelinePass* pass = new GraphicsPipelinePass(newData);
+	RenderPass* pass = new RenderPass(newData);
     if(stage)
         stage->addPass(pass);
     else
@@ -144,7 +144,7 @@ bool EffectCompositor::setPassIndex( const std::string& name, unsigned int index
 {
     unsigned int insertIndex = index;
     if ( insertIndex>=getPassList().size() ) return false;
-	osg::ref_ptr<GraphicsPipelinePass> pass;
+	osg::ref_ptr<RenderPass> pass;
     PassList& passList = getPassList();
     for ( unsigned int i=0; i<passList.size(); ++i )
     {

@@ -1,8 +1,8 @@
 ﻿
-#include "GraphicsPipeline/GraphicsPipelineStageCallback.h"
-#include "GraphicsPipeline/GraphicsPipelineStage.h"
+#include "GraphicsPipeline/RenderStageCallback.h"
+#include "GraphicsPipeline/RenderStage.h"
 #include "GraphicsPipeline/GraphicsPipeline.h"
-#include "GraphicsPipeline/GraphicsPipelinePass.h"
+#include "GraphicsPipeline/RenderPass.h"
 #include "GLMarker.h"
 #include "osg/Texture2D"
 #include <osgdb/ReadFile>
@@ -13,12 +13,12 @@
 #endif 
 namespace Effect
 {
-	void GraphicsPipelineStageCallback::setGraphicPipelineStage(GraphicsPipelineStage* stage)
+	void RenderStageCallback::setGraphicPipelineStage(RenderStage* stage)
 	{
 		_pStage = stage;
 		_pStage->m_bLoadXml = m_bLoadXml;
 	}
-	bool GraphicsPipelineStageCallback::init()
+	bool RenderStageCallback::init()
 	{
 		for (auto itr = _pStage->getPassList().begin(); itr != _pStage->getPassList().end(); itr++)
 		{
@@ -26,7 +26,7 @@ namespace Effect
 		}
 		return true;
 	}
-	bool GraphicsPipelineStageCallback::update()
+	bool RenderStageCallback::update()
 	{
 		for (auto itr = _pStage->getPassList().begin(); itr != _pStage->getPassList().end(); itr++)
 		{
@@ -34,7 +34,7 @@ namespace Effect
 		}
 		return true;
 	}
-	void GraphicsPipelineStageCallback::traverse(GraphicsPipelineStage* node,osg::NodeVisitor& nv)
+	void RenderStageCallback::traverse(RenderStage* node,osg::NodeVisitor& nv)
     {
         if(!node) return ;
 
@@ -50,7 +50,7 @@ namespace Effect
         }
     }
 
-    void DisplayStageCallback::traverse(GraphicsPipelineStage* node,osg::NodeVisitor& nv)
+    void DisplayStageCallback::traverse(RenderStage* node,osg::NodeVisitor& nv)
     {
         __super::traverse(node,nv);
     }

@@ -9,8 +9,8 @@
 #include <osgDB/XmlParser>
 
 #include "EffectCompositor_Export.h"
-#include "GraphicsPipeline/GraphicsPipelinePass.h"
-#include "GraphicsPipeline/GraphicsPipelineStage.h"
+#include "GraphicsPipeline/RenderPass.h"
+#include "GraphicsPipeline/RenderStage.h"
 
 namespace Effect
 {
@@ -43,7 +43,7 @@ public:
     const PassListMap& getAllTechniques() const { return _passLists; }
     
     /** Create new pass and add it to the end of the pass list */
-    virtual osg::Camera* createNewPass( PassType type, const std::string& name,GraphicsPipelineStage* stage = nullptr );
+    virtual osg::Camera* createNewPass( PassType type, const std::string& name,RenderStage* stage = nullptr );
     /** Remove a specified pass */
     bool removePass( const std::string& name );
     

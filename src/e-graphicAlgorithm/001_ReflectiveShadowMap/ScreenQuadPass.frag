@@ -8,4 +8,5 @@ layout(location = 0) out vec4 fragColor;
 void main()
 {
 	fragColor = texture(u_DiffuseTexture0,v2f_TexCoords);
+	fragColor.rgb = pow(fragColor.rgb, vec3(1.0f/2.2f));
 }

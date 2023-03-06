@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <GraphicsPipeline/GraphicsPipelinePass.h>
-class GBufferPass :public Effect::GraphicsPipelinePass
+#include <GraphicsPipeline/RenderPass.h>
+class GBufferPass :public Effect::RenderPass
 {
 public:
 	bool init();

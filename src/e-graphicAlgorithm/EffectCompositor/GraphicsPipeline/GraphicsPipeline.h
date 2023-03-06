@@ -19,10 +19,10 @@
 #include <osg/Camera>
 #include <osgDB/Options>
 #include <osgDB/XmlParser>
-
+#include <osgViewer/Viewer>
 
 #include "EffectCompositor"
-#include "GraphicsPipeline/GraphicsPipelineStage.h"
+#include "GraphicsPipeline/RenderStage.h"
 
 
 namespace Effect
@@ -77,7 +77,7 @@ enum GraphicPipelineStateType
 class EFFECTCOMPOSITOR_API GraphicsPipeline : public  EffectCompositor
 {
 public:
-    friend   GraphicsPipelineStage;
+    friend   RenderStage;
 
     virtual void init();
 	virtual void resize(int renderWidth, int renderHeight);
@@ -89,18 +89,29 @@ public:
      template<typename StageCallback>
      void registerStage(int id,const std::string& name)
      {
-         m_stages[id] = new GraphicsPipelineStage(this,id,name,new StageCallback);
+         m_stages[id] = new RenderStage(this,id,name,new StageCallback);
      }
+	 RenderStage* getStage(int id)
+	 {
+		 auto s = m_stages.find(id);
+		 if (s != m_stages.end())
+			 return s->second;
+		 return nullptr;
+	 }
 	
-    GraphicsPipeline();
+	
+	GraphicsPipeline();
+    GraphicsPipeline(osgViewer::Viewer* viewer);
     GraphicsPipeline( const GraphicsPipeline& copy, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY );
     META_Node( Effect, GraphicsPipeline );
 
      /** Create new pass and add it to the end of the pass list */
-   /* virtual osg::Camera* createNewPass( PassType type, const std::string& name,GraphicsPipelineStage* stage );*/
+   /* virtual osg::Camera* createNewPass( PassType type, const std::string& name,RenderStage* stage );*/
 
        // 重新从xmlnode加载
    bool reLoadFromXmlNode();
+	
+   osgViewer::Viewer* getViewer() { return m_viewer; }
 protected:
     // 加载文件并返回xmlnode
      osg::ref_ptr<osgDB::XmlNode> loadXML( const std::string& filename, const osgDB::Options* options = NULL);
@@ -108,10 +119,11 @@ protected:
   
 protected:
 
-    std::map<int,osg::ref_ptr<GraphicsPipelineStage>> m_stages;
+    std::map<int,osg::ref_ptr<RenderStage>> m_stages;
     /*osg::ref_ptr<osgDB::XmlNode> m_preDefXmlRoot*/;
-    //std::array<std::ref_ptr<GraphicsPipelineStage>,STAGE_COUNT> m_stages;
+    //std::array<std::ref_ptr<RenderStage>,STAGE_COUNT> m_stages;
 
+	osgViewer::Viewer* m_viewer;
 };  
 
 }

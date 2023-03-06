@@ -1,5 +1,5 @@
 ﻿//////////////////////////////////////////////////////////////////////////////////////////////////
-//@file: GraphicsPipelineStageCallback.h
+//@file: RenderStageCallback.h
 //@brief: 渲染阶段回调处理类
 //@author: longlongwaytogo
 //@date: 2021/02/07
@@ -8,31 +8,31 @@
 #pragma once
 #include <osg/NodeVisitor>
 #include <osg/Referenced>
-#include <GraphicsPipeline/GraphicsPipelinePass.h>
+#include <GraphicsPipeline/RenderPass.h>
 #include <initializer_list>
 namespace Effect
 {
-    //class GraphicsPipelineStage;
-    class GraphicsPipelineStage;
-    class GraphicsPipelineStageCallback :public osg::Referenced
+    //class RenderStage;
+    class RenderStage;
+    class RenderStageCallback :public osg::Referenced
     {
     public:
       
-        GraphicsPipelineStageCallback():m_bLoadXml(true)
+        RenderStageCallback():m_bLoadXml(true)
         {
         }
 
-        virtual ~GraphicsPipelineStageCallback()
+        virtual ~RenderStageCallback()
         {
         }
 
-		void setGraphicPipelineStage(GraphicsPipelineStage* stage);
+		void setGraphicPipelineStage(RenderStage* stage);
 		virtual bool init();
 		virtual bool update();
-        virtual void traverse(GraphicsPipelineStage* node,osg::NodeVisitor& nv);
+        virtual void traverse(RenderStage* node,osg::NodeVisitor& nv);
 
     protected:
-        GraphicsPipelineStage* _pStage;
+        RenderStage* _pStage;
 		bool m_bLoadXml;
     };
 	// for create from code 
@@ -47,7 +47,7 @@ namespace Effect
 	};
 
 #define ATTACHMENTTYPE "AttachMentType"
-    class SceneStageCallback :public GraphicsPipelineStageCallback
+    class SceneStageCallback :public RenderStageCallback
     {
     public:
 		osg::Camera* createNewPass(PassType type, const std::string& name);
@@ -70,7 +70,7 @@ namespace Effect
             return true;
          }
 
-          virtual void traverse(GraphicsPipelineStage* node,osg::NodeVisitor& nv)
+          virtual void traverse(RenderStage* node,osg::NodeVisitor& nv)
           {
                __super::traverse(node,nv);
           }
@@ -78,19 +78,19 @@ namespace Effect
 
 
     // tiledShading
-    class TiledShadingCallback: public GraphicsPipelineStageCallback
+    class TiledShadingCallback: public RenderStageCallback
     {
 
     public:
         virtual bool init();
 
-        virtual void traverse(GraphicsPipelineStage* node,osg::NodeVisitor& nv)
+        virtual void traverse(RenderStage* node,osg::NodeVisitor& nv)
         {
             __super::traverse(node,nv);
         }
     };
 
-    class DisplayStageCallback :public GraphicsPipelineStageCallback
+    class DisplayStageCallback :public RenderStageCallback
     {
     public:
 
@@ -99,6 +99,6 @@ namespace Effect
           return true;
         }
 
-       virtual void traverse(GraphicsPipelineStage* node,osg::NodeVisitor& nv);
+       virtual void traverse(RenderStage* node,osg::NodeVisitor& nv);
     };
 }

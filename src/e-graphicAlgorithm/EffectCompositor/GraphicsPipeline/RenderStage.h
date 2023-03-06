@@ -14,17 +14,17 @@
 #include <osgDB/XmlParser>
 
 #include "EffectCompositor_export.h"
-#include "GraphicsPipeline/GraphicsPipelinePass.h"
-#include "GraphicsPipeline/GraphicsPipelineStageCallback.h"
+#include "GraphicsPipeline/RenderPass.h"
+#include "GraphicsPipeline/RenderStageCallback.h"
 namespace Effect
 {
     class GraphicsPipeline;
-    class EFFECTCOMPOSITOR_API GraphicsPipelineStage :public osg::Referenced
+    class EFFECTCOMPOSITOR_API RenderStage :public osg::Referenced
     {
     public:
-          friend class GraphicsPipelineStageCallback;
-        GraphicsPipelineStage(GraphicsPipeline* pipeline,int id,const std::string name,
-        GraphicsPipelineStageCallback* callback=nullptr)
+          friend class RenderStageCallback;
+        RenderStage(GraphicsPipeline* pipeline,int id,const std::string name,
+        RenderStageCallback* callback=nullptr)
             :m_pipeline(pipeline),m_id(id),m_name(name),m_callback(callback), m_bLoadXml(true)
         {
             if(m_callback)
@@ -37,7 +37,7 @@ namespace Effect
 
         virtual void traverse(osg::NodeVisitor& nv);
 
-        bool addPass(GraphicsPipelinePass* passData);
+        bool addPass(RenderPass* passData);
 
         virtual bool getPassData( const std::string& name, PassData& data ) const;
 
@@ -45,12 +45,12 @@ namespace Effect
         GraphicsPipeline* getGraphicsPipeline(){ return m_pipeline;}
 		
     protected:
-       // GraphicsPipelinePass m_pass;
+       // RenderPass m_pass;
         int m_id;
         std::string m_name;
         GraphicsPipeline* m_pipeline;
         osg::ref_ptr<osgDB::XmlNode> _xmlRoot;
-        osg::ref_ptr<GraphicsPipelineStageCallback> m_callback;
+        osg::ref_ptr<RenderStageCallback> m_callback;
         PassList m_passList;
 		bool m_bLoadXml;
     };

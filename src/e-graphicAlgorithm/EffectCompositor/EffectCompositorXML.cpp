@@ -195,13 +195,13 @@ osg::Camera* EffectCompositor::createPassFromXML( osgDB::XmlNode* xmlNode,const 
     else if (xmlNode->name == "compute_pass")
 		passType = COMPUTE_PASS;
 	
-    GraphicsPipelineStage* stage = nullptr;
+    RenderStage* stage = nullptr;
     if(options)
     {
         osgDB::Options* opt = const_cast<osgDB::Options*>(options);
         if(opt)
         {
-            stage = dynamic_cast<GraphicsPipelineStage*>(opt->getUserData());
+            stage = dynamic_cast<RenderStage*>(opt->getUserData());
         }
     }
     osg::Camera* camera = createNewPass( passType, name ,stage);

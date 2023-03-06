@@ -1,5 +1,5 @@
 ﻿#include "GraphicsPipeline/GraphicsPipeline.h"
-#include "GraphicsPipeline/GraphicsPipelineStageCallback.h"
+#include "GraphicsPipeline/RenderStageCallback.h"
 #include "GraphicsPipeline/GraphicsPiplelineEventCallback.h"
 
 
@@ -10,10 +10,14 @@
 
 namespace Effect
 {
-    GraphicsPipeline::GraphicsPipeline()
+	GraphicsPipeline::GraphicsPipeline():m_viewer(nullptr)
+	{
+		_renderTargetResolution = osg::Vec3(1024, 768, 0);
+	}
+
+    GraphicsPipeline::GraphicsPipeline(osgViewer::Viewer* viewer =0):m_viewer(viewer)
     {
         _renderTargetResolution = osg::Vec3(1024,768,0);
-		
 		
     }
 
@@ -21,6 +25,7 @@ namespace Effect
         :EffectCompositor(copy,copyop)
     {
         m_stages = copy.m_stages;
+		m_viewer = 0;
     }
 
     void GraphicsPipeline::traverse(osg::NodeVisitor& nv)
@@ -101,7 +106,7 @@ namespace Effect
 
         return bRet;
     }
-//    osg::Camera* GraphicsPipeline::createNewPass( PassType type, const std::string& name,GraphicsPipelineStage* stage )
+//    osg::Camera* GraphicsPipeline::createNewPass( PassType type, const std::string& name,RenderStage* stage )
 //    {
 //    osg::ref_ptr<osg::Camera> camera = new osg::Camera;
 //    camera->setName( name );

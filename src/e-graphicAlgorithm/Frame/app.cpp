@@ -78,15 +78,15 @@ namespace Frame
 		m_h = 768;
         m_root = new osg::Group;
         m_scene = new osg::Group;
-		m_pipeline = new Effect::CustomPipeline;// new Frame::GraphicsPipeline;
         m_viewer = new osgViewer::Viewer;
+		m_pipeline = new Effect::CustomPipeline(m_viewer.get());// new Frame::GraphicsPipeline;
     }
     bool App::init(int argc, char** argv)
     {
         m_root->addChild(m_pipeline);
         m_pipeline->addChild(m_scene);
 
-		osg::setNotifyLevel(osg::NotifySeverity::ALWAYS);
+	//	osg::setNotifyLevel(osg::NotifySeverity::ALWAYS);
         initScene();
 
         if (m_scene->getNumChildren() == 0)

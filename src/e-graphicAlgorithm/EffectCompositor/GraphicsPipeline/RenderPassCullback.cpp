@@ -1,4 +1,4 @@
-#include "GraphicsPipeline/GraphicsPassCullback.h"
+﻿#include "GraphicsPipeline/RenderPassCullback.h"
 
 
 void Effect::PassCullCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
