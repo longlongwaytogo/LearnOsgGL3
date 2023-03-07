@@ -21,7 +21,7 @@
 #include <osgDB/XmlParser>
 #include <osgViewer/Viewer>
 
-#include "EffectCompositor"
+#include "EffectCompositor.h"
 #include "GraphicsPipeline/RenderStage.h"
 
 

@@ -3,6 +3,8 @@
 class GBufferPass :public Effect::RenderPass
 {
 public:
-	bool init();
+
+	bool init() override;
+	bool update() override;
 
 };

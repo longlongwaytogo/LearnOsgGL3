@@ -86,7 +86,7 @@ namespace Frame
         m_root->addChild(m_pipeline);
         m_pipeline->addChild(m_scene);
 
-	//	osg::setNotifyLevel(osg::NotifySeverity::ALWAYS);
+		//osg::setNotifyLevel(osg::NotifySeverity::ALWAYS);
         initScene();
 
         if (m_scene->getNumChildren() == 0)
@@ -115,7 +115,10 @@ namespace Frame
     bool App::_initCamera()
     {
         osgUtil::Optimizer optimizer;
-        optimizer.optimize(m_root.get(), osgUtil::Optimizer::ALL_OPTIMIZATIONS | osgUtil::Optimizer::TESSELLATE_GEOMETRY);
+		// 取消osgUtil::Optimizer::OPTIMIZE_TEXTURE_SETTINGS优化，它会认为两个texture如果参数相同，即未同一个材质，fbo中关联的buf，没有image，参数又相同，则会优化错误。
+        optimizer.optimize(m_root.get(), (osgUtil::Optimizer::ALL_OPTIMIZATIONS | osgUtil::Optimizer::TESSELLATE_GEOMETRY)& 
+			~(osgUtil::Optimizer::SHARE_DUPLICATE_STATE|osgUtil::Optimizer::OPTIMIZE_TEXTURE_SETTINGS|
+			  osgUtil::Optimizer::TEXTURE_ATLAS_BUILDER));
         osg::DisplaySettings::instance()->setMinimumNumStencilBits(8);
 
 #if USE_GL3

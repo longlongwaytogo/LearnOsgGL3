@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include <osg/NodeCallback>
 #include <osgUtil/CullVisitor>
-#include "EffectCompositor"
+#include "EffectCompositor.h"
 #include "GraphicsPipeline/GraphicsPipeline.h"
 
 namespace Effect

@@ -5,7 +5,7 @@
 #include <osgUtil/CullVisitor>
 #include <iostream>
 #include <sstream>
-#include "EffectCompositor"
+#include "EffectCompositor.h"
 #include "GraphicsPipeline/RenderPassCullback.h"
 #include "GraphicsPipeline/RenderPass.h"
 #include "common/common.h"

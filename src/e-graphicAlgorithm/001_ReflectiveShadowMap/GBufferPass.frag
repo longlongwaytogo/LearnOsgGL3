@@ -11,7 +11,7 @@ layout(location = 2) out vec4 Positon_;
 void main()
 {
 	vec3 Albedo = texture(u_DiffuseTexture,v2f_TexCoords).rgb;
-	Albedo = pow(Albedo, vec3(2.2f)); // to linear space 
+	//Albedo = pow(Albedo, vec3(2.2f)); // to linear space 
 	
 	Albedo_ = vec4(Albedo, 1.0f);
 	Normal_ = vec4(v2f_Normal,1.0);

@@ -11,17 +11,23 @@ uniform mat4 osg_ProjectionMatrix;
 uniform mat4 osg_ModelViewMatrix;
  
 uniform mat4 u_LightVPMatrix;
-uniform mat4 osg_NormalMatrix;
+uniform mat4 u_LightViewMatrixInverse;
+uniform mat3 osg_NormalMatrix;
 
+uniform mat4 u_MainViewMatrix;
 out vec2 v2f_TexCoords;
 out vec3 v2f_Normal;
 out vec3 v2f_FragPosInViewSpace;
-
+// osg中： osg_ViewMatrix osg_ViewMatrixInverse 总是主相机的viewmatrix
 void main()
 {
-	vec4 FragPosInWorldSpace = osg_ViewMatrixInverse*osg_ModelViewMatrix * _Position;
+	mat4 ModelMatrix = u_LightViewMatrixInverse*osg_ModelViewMatrix;
+	//vec4 FragPosInWorldSpace = ModelMatrix * _Position;
 	gl_Position = osg_ModelViewProjectionMatrix * _Position;//FragPosInWorldSpace;
 	v2f_TexCoords = _TexCoord;
-	v2f_Normal = mat3(osg_NormalMatrix) * _Normal;
-	v2f_FragPosInViewSpace = (osg_ModelViewMatrix * _Position).xyz;
+	//存储的是在相机空间下的位置以及法线，不是光源空间下的
+	mat4 MainModelView = u_MainViewMatrix * ModelMatrix;
+	v2f_Normal = normalize(mat3(transpose(inverse(MainModelView))) * _Normal);
+
+	v2f_FragPosInViewSpace = (MainModelView * _Position).xyz;
 }

@@ -16,7 +16,7 @@
 #include <osgDB/FileNameUtils>
 #include <iostream>
 #include <sstream>
-#include <EffectCompositor>
+#include <EffectCompositor.h>
 #include <GLMarker.h>
 #if OSG_VERSION_LESS_OR_EQUAL(3,6,0)
 
