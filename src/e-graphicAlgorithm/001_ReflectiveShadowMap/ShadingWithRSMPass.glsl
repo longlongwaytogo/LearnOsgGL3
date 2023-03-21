@@ -26,7 +26,8 @@ uniform vec3  u_LightDirInViewSpace;
 vec3 calcVPLIrradiance(vec3 vVPLFlux, vec3 vVPLNormal, vec3 vVPLPos, vec3 vFragPos, vec3 vFragNormal, float vWeight)
 {
 	vec3 VPL2Frag = normalize(vFragPos - vVPLPos);
-	return vVPLFlux * max(dot(vVPLNormal, VPL2Frag),0)* max(dot(vFragNormal,-VPL2Frag),0) * vWeight;
+	return (vVPLFlux * max(dot(vVPLNormal, VPL2Frag),0)* max(dot(vFragNormal,-VPL2Frag),0) * vWeight); // 认为是太阳光
+//	return (vVPLFlux * max(dot(vVPLNormal, VPL2Frag),0)* max(dot(vFragNormal,-VPL2Frag),0) * vWeight)/pow(length(VPL2Frag),4.0);
 }
 void main()
 {	

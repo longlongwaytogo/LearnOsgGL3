@@ -41,18 +41,6 @@ public:
 				osg::Matrixf MainViewMatrix = ViewMatrix;
 				ss->getOrCreateUniform("u_MainViewMatrix", osg::Uniform::FLOAT_MAT4)->set(MainViewMatrix);
 			}
-			for (auto& e : _pStage->getPassList())
-			{
-				osg::Camera* pass = e->getPassData().pass;
-				std::string passName = pass->getName();
-				if (osg::StateAttribute* tex = pass->getOrCreateStateSet()->getTextureAttribute(0, osg::StateAttribute::TEXTURE)){
-
-					std::string texName = tex->getName();
-					if (texName.size() > 0 && passName.size() > 0)
-						printf("pass:%s,tex:%s\n", passName.c_str(), texName.c_str());
-					}
-		
-			}
 		}
 		return true;
 
@@ -216,17 +204,10 @@ public:
 						float xi2 = u(e);
 						handles->push_back({ xi1 * sin(2 * osg::PIf * xi2), xi1 * cos(2 * osg::PIf * xi2), xi1 * xi1, 0 });
 					}
-				
 					osg::UniformBufferBinding* ssbb = new osg::UniformBufferBinding(0, handles, 0, sizeof(osg::Vec4) * m_VPLNum);
-					//osg::BindlessTexture* tex = new BindlessTexture(buffer, images);
-					//ss->setTextureAttribute(0, tex, osg::StateAttribute::ON);
 					ss->setAttributeAndModes(ssbb, osg::StateAttribute::ON);
-					//program->addBindUniformBlock("VPLsSampleCoordsAndWeights", 0);
+					program->addBindUniformBlock("VPLsSampleCoordsAndWeights", 0);
 				}
-				// 已经在全局声明了
-				//osg::Matrix LightVPMatrix;
-				//ss->addUniform(new osg::Uniform("LightVPMatrix", LightVPMatrix));
-			
 
 				ss->setTextureAttributeAndModes(0,getShaderedData("AlbedoTexture"));
 				ss->setTextureAttributeAndModes(1,getShaderedData("NormalTexture"));
@@ -242,13 +223,8 @@ public:
 				ss->addUniform(new osg::Uniform("u_RSMNormalTexture", 4));
 				ss->addUniform(new osg::Uniform("u_RSMPositionTexture", 5));
 
-
-			ss->addUniform(new osg::Uniform("u_MaxSampleRadius", m_MaxSampleRadius));
-			//ss->addUniform(new osg::Uniform("u_RSMSize", "RSMResolution");
-			ss->addUniform(new osg::Uniform("u_VPLNum", m_VPLNum));
-				//m_LightDir = glm::vec4(ElayGraphics::ResourceManager::getSharedDataByName<glm::vec3>("LightDir"), 0.0f);	//这是个方向，第四维需要是0，不能为1，否则会出问题
-
-			
+				ss->addUniform(new osg::Uniform("u_MaxSampleRadius", m_MaxSampleRadius));
+				ss->addUniform(new osg::Uniform("u_VPLNum", m_VPLNum));
 			}
 			
 			// create quad
@@ -262,9 +238,6 @@ public:
 				program->addShader(osgDB::readRefShaderFile(fs));
 				ss->setAttribute(program); 
 				ss->setTextureAttributeAndModes(0, getShaderedData("ShadingTexture"));
-				//ss->setTextureAttributeAndModes(0, getShaderedData("RSMFluxTexture")); 
-		
-				
 				attachCamera(quad, {});
 			}
 		}
