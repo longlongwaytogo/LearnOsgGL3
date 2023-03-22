@@ -8,6 +8,7 @@
 #include "EffectCompositor.h"
 #include "GraphicsPipeline/RenderPassCullback.h"
 #include "GraphicsPipeline/RenderPass.h"
+#include "GLMarker.h"
 #include "common/common.h"
 using namespace Effect;
 
@@ -52,7 +53,21 @@ EffectCompositor::EffectCompositor( const EffectCompositor& copy, const osg::Cop
 EffectCompositor::~EffectCompositor()
 {
 }
-osg::Camera* EffectCompositor::createNewPass( PassType type, const std::string& name,RenderStage* stage )
+RenderPass* EffectCompositor::createRenderPass(PassType type, const std::string& name, RenderStage* stage/* = nullptr*/)
+{
+	osg::Camera* camera = createNewPass(type, name);
+	osg::ref_ptr<RenderPass> pass = new RenderPass(type,name,camera);
+	return pass.release();
+}
+
+void Effect::EffectCompositor::addPassToStage(RenderPass* pass, RenderStage* stage)
+{
+	if (stage && pass)
+		stage->addPass(pass);
+	else
+		getPassList().push_back(pass);
+}
+osg::Camera* EffectCompositor::createNewPass( PassType type, const std::string& name)
 {
     osg::ref_ptr<osg::Camera> camera = new osg::Camera;
     camera->setName( name );
@@ -96,19 +111,11 @@ osg::Camera* EffectCompositor::createNewPass( PassType type, const std::string& 
         camera->setReferenceFrame( osg::Transform::RELATIVE_RF );
     }
     
-    PassData newData;
-    newData.activated = true;
-    newData.type = type;
-    newData.name = name;
-    newData.pass = camera;
-
-	RenderPass* pass = new RenderPass(newData);
-    if(stage)
-        stage->addPass(pass);
-    else
-        getPassList().push_back(pass);
-    
-    return camera.get();
+	if (camera)
+	{
+		registerCameraMarker(camera);
+	}
+    return camera.release();
 }
 
 bool EffectCompositor::removePass( const std::string& name )
@@ -240,6 +247,7 @@ bool EffectCompositor::setTexture( const std::string& name, osg::Texture* tex )
     }
     else
     {
+		tex->setName(name);
         _textureMap[name] = tex;
         return true;
     }

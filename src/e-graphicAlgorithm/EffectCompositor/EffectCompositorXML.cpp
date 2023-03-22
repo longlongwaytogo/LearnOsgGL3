@@ -204,15 +204,12 @@ osg::Camera* EffectCompositor::createPassFromXML( osgDB::XmlNode* xmlNode,const 
             stage = dynamic_cast<RenderStage*>(opt->getUserData());
         }
     }
-    osg::Camera* camera = createNewPass( passType, name ,stage);
-	if(camera)
-	{
-        registerCameraMarker(camera);
-	}
-    osg::StateSet* stateset = camera->getOrCreateStateSet();
+	RenderPass* renderPass = createRenderPass(passType, name, stage);
+	addPassToStage(renderPass, stage);
+	osg::ref_ptr<osg::Camera> camera = renderPass->getPassData().pass;
+	osg::StateSet* stateset = camera->getOrCreateStateSet();
     osg::ref_ptr<osg::Program> program = new osg::Program;
     program->setName( name );
-	
     
     osg::StateAttribute::GLModeValue shaderModeValue = osg::StateAttribute::ON;
     int override = atoi( xmlNode->properties["override"].c_str() );

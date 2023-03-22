@@ -57,9 +57,9 @@ namespace Effect
          SceneGbuffer->tildShading ->postEffect ->toneMaping->dispaly->debug
         */
         // register statge and callback
-         registerStage<SceneStageCallback>(STAGE_SCENE_BUFFER,"SceneGBuffer");
+         registerStage<RenderStageCallback>(STAGE_SCENE_BUFFER,"SceneGBuffer");
          registerStage<TiledShadingCallback>(STAGE_TILEDSHADING,"TiledShading");
-         registerStage<SceneStageCallback>(STAGE_TONE_MAPPING,"ToneMapping");
+         registerStage<RenderStageCallback>(STAGE_TONE_MAPPING,"ToneMapping");
          registerStage<DisplayStageCallback>(STAGE_DISPLAY,"Display");
 
          // for each stage

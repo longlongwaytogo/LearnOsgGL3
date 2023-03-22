@@ -43,6 +43,7 @@ namespace Effect
 
         PassList& getPassList();
         GraphicsPipeline* getGraphicsPipeline(){ return m_pipeline;}
+		RenderStageCallback* getRenderStageCallback() { return m_callback.get(); }
 		
     protected:
        // RenderPass m_pass;

@@ -34,6 +34,10 @@ namespace Effect
         {
             // default init
         }
+		/*for (auto e : m_passList)
+		{
+			e->init();
+		}*/
         return bRet;
     }
 
@@ -59,6 +63,8 @@ namespace Effect
                if((*itr)->getPassData().name  == pass->getPassData().name)
                    return false;
            }
+		   pass->setRenderStage(this);
+		   pass->init();
            m_passList.push_back(pass);
            return true;
        }

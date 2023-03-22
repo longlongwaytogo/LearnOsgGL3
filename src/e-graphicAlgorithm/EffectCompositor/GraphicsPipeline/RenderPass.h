@@ -5,8 +5,13 @@
 #include <vector>
 
 #include <osg/camera>
+#include <osg/Shader>
+#include <osg/Program>
+#include <osgDB/ReadFile>
 namespace Effect
 {
+	class RenderStage;
+
 	enum PassType { 
 	FORWARD_PASS,
 	DEFERRED_PASS,
@@ -38,18 +43,32 @@ namespace Effect
 	class RenderPass : public osg::Referenced
 	{
 	public:
-		RenderPass()
+		RenderPass():m_pRenderStage(nullptr)
 		{
 			m_passData.activated = false;
 		}
 
-		RenderPass(PassType type, const std::string& name, osg::Camera* camera)
+		RenderPass(PassType type, const std::string& name, osg::Camera* camera) :m_pRenderStage(nullptr)
+		{
+			setPassData(type, name, camera);
+		}
+		inline osg::Camera* getCamera()
+		{
+			return m_passData.pass.get();
+		}
+
+		inline void setPassData(PassType type, const std::string& name, osg::Camera* camera)
 		{
 			m_passData.activated = true;
 			m_passData.type = type;
 			m_passData.name = name;
 			m_passData.pass = camera;
 		}
+
+		void setRenderStage(RenderStage* rs);
+		RenderStage* getRenderStage();
+
+		void registerSharedData(const std::string& name, osg::Texture* tex);
 
 		RenderPass(const PassData& passData):m_passData(passData)
 		{
@@ -66,6 +85,7 @@ namespace Effect
 	protected:
 		PassData m_passData;
 		std::vector<osg::ref_ptr<osg::Shader>> m_shaders;
+		RenderStage* m_pRenderStage;
 	};
 
 	typedef std::vector<osg::ref_ptr<RenderPass>> PassList;

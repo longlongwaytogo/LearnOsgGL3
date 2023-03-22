@@ -10,14 +10,27 @@
 #include <osg/Referenced>
 #include <GraphicsPipeline/RenderPass.h>
 #include <initializer_list>
+#define ATTACHMENTTYPE "AttachMentType"
+
 namespace Effect
 {
-    //class RenderStage;
+
     class RenderStage;
+
+	// for create from code 
+	enum class ETextureAttachmentType
+	{
+		ColorTexture, // colorbuffer
+		DepthTexture, // depthbuffer
+		CubeDepthTexture, // cubemapBuffer
+		StencilTexture,
+		DepthAndStencilTexture,
+		DepthArrayTexture
+	};
+
     class RenderStageCallback :public osg::Referenced
     {
     public:
-      
         RenderStageCallback():m_bLoadXml(true)
         {
         }
@@ -31,40 +44,33 @@ namespace Effect
 		virtual bool update();
         virtual void traverse(RenderStage* node,osg::NodeVisitor& nv);
 
+		RenderPass* createNewPass(PassType type, const std::string& name);
+
+		inline void setTextureAttachmentType(osg::Texture* texture, ETextureAttachmentType type)
+		{
+			texture->setUserValue(ATTACHMENTTYPE, (int)type);
+		}
+
+		inline ETextureAttachmentType getTextureAttatchmentType(osg::Texture* tex)
+		{
+			int nType = (int)ETextureAttachmentType::ColorTexture;
+			tex->getUserValue(ATTACHMENTTYPE, nType);
+			return (ETextureAttachmentType)nType;
+		}
+		void attachCamera(osg::Camera* camera, const std::initializer_list<osg::ref_ptr<osg::Texture>>& vioTextureAttachments);
+		void registerSharedData(const std::string& name, osg::Texture* tex);
+		osg::Texture* getSharedData(const std::string& name);
+
     protected:
         RenderStage* _pStage;
 		bool m_bLoadXml;
     };
-	// for create from code 
-	enum class ETextureAttachmentType
-	{
-		ColorTexture, // colorbuffer
-		DepthTexture, // depthbuffer
-		CubeDepthTexture, // cubemapBuffer
-		StencilTexture,
-		DepthAndStencilTexture,
-		DepthArrayTexture
-	};
+	
 
-#define ATTACHMENTTYPE "AttachMentType"
+
     class SceneStageCallback :public RenderStageCallback
     {
     public:
-		osg::Camera* createNewPass(PassType type, const std::string& name);
-		void setTextureAttachmentType(osg::Texture* texture, ETextureAttachmentType type)
-		{
-			texture->setUserValue(ATTACHMENTTYPE, (int)type);
-		}
-		ETextureAttachmentType getTextureAttatchmentType(osg::Texture* tex)
-		{
-			int nType =(int) ETextureAttachmentType::ColorTexture;
-			tex->getUserValue(ATTACHMENTTYPE, nType);
-			return (ETextureAttachmentType)nType;
-		}
-		void attachCamera(osg::Camera* camera,const std::initializer_list<osg::ref_ptr<osg::Texture>>& vioTextureAttachments);;
-		void registerSharedData(const std::string& name, osg::Texture* tex);
-		osg::Texture* getShaderedData(const std::string& name);
-
 		virtual bool init() 
         {
             return true;
@@ -75,7 +81,6 @@ namespace Effect
                __super::traverse(node,nv);
           }
     };
-
 
     // tiledShading
     class TiledShadingCallback: public RenderStageCallback

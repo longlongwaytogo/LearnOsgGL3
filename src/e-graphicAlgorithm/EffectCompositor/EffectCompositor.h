@@ -43,7 +43,14 @@ public:
     const PassListMap& getAllTechniques() const { return _passLists; }
     
     /** Create new pass and add it to the end of the pass list */
-    virtual osg::Camera* createNewPass( PassType type, const std::string& name,RenderStage* stage = nullptr );
+   
+	osg::Camera* createNewPass(PassType type, const std::string& name);
+	RenderPass* createRenderPass(PassType type, const std::string& name, RenderStage* stage = nullptr);
+
+	void setCameraToPass(PassType type, osg::Camera* camera);
+ 
+	void addPassToStage(RenderPass* pass, RenderStage* stage);
+
     /** Remove a specified pass */
     bool removePass( const std::string& name );
     

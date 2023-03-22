@@ -6,6 +6,7 @@
 #include "GLMarker.h"
 #include "osg/Texture2D"
 #include <osgdb/ReadFile>
+#include <assert.h>
   
 #if OSG_VERSION_GREATER_THAN(3,4,0)
 #include <osg/BindImageTexture>
@@ -86,10 +87,6 @@ namespace Effect
         "}\n"
     };
 */
-    
-  
-     
-
 
 bool TiledShadingCallback::init()
 {
@@ -255,29 +252,25 @@ bool TiledShadingCallback::init()
 #endif 
 	return true;
 }
-osg::Camera* SceneStageCallback::createNewPass(PassType type, const std::string& name)
+RenderPass* RenderStageCallback::createNewPass(PassType type, const std::string& name)
 {
 	if (!_pStage)
 		return nullptr;
-	osg::Camera* camera = _pStage->getGraphicsPipeline()->createNewPass(type, name, _pStage);
-
-	if (camera)
-	{
-		registerCameraMarker(camera);
-	}
-	return camera;
+	auto renderPass = _pStage->getGraphicsPipeline()->createRenderPass(type, name, _pStage);
+	assert(renderPass && "create camera failed!");
+	return renderPass;
+	
 }
 
-void SceneStageCallback::registerSharedData(const std::string& name, osg::Texture* tex)
+void RenderStageCallback::registerSharedData(const std::string& name, osg::Texture* tex)
 {
-	tex->setName(name);
 	_pStage->getGraphicsPipeline()->setTexture(name, tex);
 }
-osg::Texture* SceneStageCallback::getShaderedData(const std::string& name)
+osg::Texture* RenderStageCallback::getSharedData(const std::string& name)
 {
 	return _pStage->getGraphicsPipeline()->getTexture(name);
 }
-void SceneStageCallback::attachCamera(osg::Camera* camera,const std::initializer_list<osg::ref_ptr<osg::Texture>>& vioTextureAttachments)
+void RenderStageCallback::attachCamera(osg::Camera* camera,const std::initializer_list<osg::ref_ptr<osg::Texture>>& vioTextureAttachments)
 {
 	int numAttached = 0;
 	for (auto& e : vioTextureAttachments)

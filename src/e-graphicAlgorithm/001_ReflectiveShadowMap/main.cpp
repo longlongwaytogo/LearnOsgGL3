@@ -49,8 +49,9 @@ public:
 	{
 		osg::StateSet* rootSateSet = _pStage->getGraphicsPipeline()->getOrCreateStateSet();
 		{ // gbuffer
-			if (osg::Camera* gbuffer = createNewPass(Effect::FORWARD_PASS, "GBuffer"))
+			if (auto gbufferPass = createNewPass(Effect::FORWARD_PASS, "GBuffer"))
 			{
+				osg::Camera* gbuffer = gbufferPass->getCamera();
 				gbuffer->setComputeNearFarMode(osg::Camera::ComputeNearFarMode::DO_NOT_COMPUTE_NEAR_FAR);
 			 
 				osg::StateSet* ss = gbuffer->getOrCreateStateSet();
@@ -93,8 +94,9 @@ public:
 				attachCamera(gbuffer, { TextureConfig4Albedo,TextureConfig4Normal,TextureConfig4Position,TextureConfig4Depth });
 			}
 			
-			if(osg::Camera* rsm = createNewPass(Effect::FORWARD_PASS, "RSMBuffer"))
+			if(auto rsmPass = createNewPass(Effect::FORWARD_PASS, "RSMBuffer"))
 			{
+				osg::Camera* rsm = rsmPass->getCamera();
 				rsm->setClearColor(osg::Vec4(0, 0, 0, 1));
 				
 				// render at light pos
@@ -158,8 +160,9 @@ public:
 			}
 
 			// ShadingWithRSMPass
-			if (osg::Camera* ShadingWithRSM = createNewPass(Effect::COMPUTE_PASS, "ShadingWithRSMBuffer"))
+			if (auto ShadingWithRSMPass = createNewPass(Effect::COMPUTE_PASS, "ShadingWithRSMBuffer"))
 			{
+				osg::Camera* ShadingWithRSM = ShadingWithRSMPass->getCamera();
 				float w = 1920;
 				float h = 1152;
 				osg::ref_ptr<osg::Node> sourceNode = new Effect::DispatchComputeWithBarrier((w + 16 - 1) / 16, (h + 16 - 1) / 16, 1, GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -209,12 +212,12 @@ public:
 					program->addBindUniformBlock("VPLsSampleCoordsAndWeights", 0);
 				}
 
-				ss->setTextureAttributeAndModes(0,getShaderedData("AlbedoTexture"));
-				ss->setTextureAttributeAndModes(1,getShaderedData("NormalTexture"));
-				ss->setTextureAttributeAndModes(2, getShaderedData("PositionTexture"));
-				ss->setTextureAttributeAndModes(3, getShaderedData("RSMFluxTexture"));
-				ss->setTextureAttributeAndModes(4, getShaderedData("RSMNormalTexture"));
-				ss->setTextureAttributeAndModes(5,getShaderedData("RSMPositionTexture"));
+				ss->setTextureAttributeAndModes(0,getSharedData("AlbedoTexture"));
+				ss->setTextureAttributeAndModes(1,getSharedData("NormalTexture"));
+				ss->setTextureAttributeAndModes(2, getSharedData("PositionTexture"));
+				ss->setTextureAttributeAndModes(3, getSharedData("RSMFluxTexture"));
+				ss->setTextureAttributeAndModes(4, getSharedData("RSMNormalTexture"));
+				ss->setTextureAttributeAndModes(5,getSharedData("RSMPositionTexture"));
 
 				ss->addUniform(new osg::Uniform("u_AlbedoTexture",0));
 				ss->addUniform(new osg::Uniform("u_NormalTexture", 1));
@@ -228,8 +231,9 @@ public:
 			}
 			
 			// create quad
-			if (osg::Camera* quad = createNewPass(Effect::DEFERRED_PASS, "Quad"))
+			if (auto quadPass = createNewPass(Effect::DEFERRED_PASS, "Quad"))
 			{
+				osg::Camera* quad = quadPass->getCamera();
 				osg::StateSet* ss = quad->getOrCreateStateSet();
 				osg::Program* program = new osg::Program;
 				std::string vs = shaderPath + std::string("/ScreenQuadPass.vert");
@@ -237,8 +241,9 @@ public:
 				program->addShader(osgDB::readRefShaderFile(vs));
 				program->addShader(osgDB::readRefShaderFile(fs));
 				ss->setAttribute(program); 
-				ss->setTextureAttributeAndModes(0, getShaderedData("ShadingTexture"));
+				ss->setTextureAttributeAndModes(0, getSharedData("ShadingTexture"));
 				attachCamera(quad, {});
+				_pStage->addPass(quadPass);
 			}
 		}
 		return true;
@@ -254,6 +259,7 @@ public:
 		setWindowSize(w, h);
 		// create gbuffer
 		m_pipeline->registerStage<ReflectiveShadowMapStageCallback>(0,"ReflectiveShadowMap");
+		addModel(Frame::getDefaultModel());
 	}
 
 	virtual void initCamera()override
