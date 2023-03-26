@@ -125,6 +125,10 @@ add_subdirectory(src/d-advanced/03-gemoetry-buttlefly)
 # graphicAlgorithm
 add_subdirectory(src/e-graphicAlgorithm/EffectCompositor)
 add_subdirectory(src/e-graphicAlgorithm/Frame)
-add_subdirectory(src/e-graphicAlgorithm/DepthToPositionAndNormal)
-add_subdirectory(src/e-graphicAlgorithm/001_ReflectiveShadowMap)
+add_subdirectory(src/e-graphicAlgorithm/SH_Sampler) # 球谐函数 Spherical Harmonics
+add_subdirectory(src/e-graphicAlgorithm/DepthToPositionAndNormal) # 深度重建
+add_subdirectory(src/e-graphicAlgorithm/001_ReflectiveShadowMap)  # 基于阴影的反射光照
 
+
+# GPU Pro1
+add_subdirectory(src/f-GPUPro1)

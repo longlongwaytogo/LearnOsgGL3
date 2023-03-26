@@ -92,6 +92,7 @@ public:
 				registerSharedData("PositionTexture", TextureConfig4Position);
 				registerSharedData("DepthTexture", TextureConfig4Depth); 
 				attachCamera(gbuffer, { TextureConfig4Albedo,TextureConfig4Normal,TextureConfig4Position,TextureConfig4Depth });
+				_pStage->addPass(gbufferPass);
 			}
 			
 			if(auto rsmPass = createNewPass(Effect::FORWARD_PASS, "RSMBuffer"))
@@ -157,6 +158,7 @@ public:
 				rootSateSet->addUniform(new osg::Uniform("u_LightViewMatrixInverse", LightViewMatrixInverse));
 				rootSateSet->addUniform(new osg::Uniform("u_RSMSize", m_RSMResolution));
 				rootSateSet->addUniform(new osg::Uniform("LightDir", LightDir));
+				_pStage->addPass(rsmPass);
 			}
 
 			// ShadingWithRSMPass
@@ -228,6 +230,7 @@ public:
 
 				ss->addUniform(new osg::Uniform("u_MaxSampleRadius", m_MaxSampleRadius));
 				ss->addUniform(new osg::Uniform("u_VPLNum", m_VPLNum));
+				_pStage->addPass(ShadingWithRSMPass);
 			}
 			
 			// create quad
