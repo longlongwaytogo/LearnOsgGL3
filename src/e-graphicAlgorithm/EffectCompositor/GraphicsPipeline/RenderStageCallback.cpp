@@ -275,6 +275,8 @@ void RenderStageCallback::attachCamera(osg::Camera* camera,const std::initialize
 	int numAttached = 0;
 	for (auto& e : vioTextureAttachments)
 	{
+		if (!e)
+			continue;
 		ETextureAttachmentType  type = ETextureAttachmentType::ColorTexture;
 		type = getTextureAttatchmentType(e);
 		osg::Camera::BufferComponent bc = osg::Camera::COLOR_BUFFER;

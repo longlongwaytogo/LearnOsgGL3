@@ -18,6 +18,9 @@
 
 #include "DepthPass.h"
 #include "ReConstructPass.h"
+
+//https://zhuanlan.zhihu.com/p/367257314?utm_id=0
+http://www.klayge.org/2014/06/19/klayge-4-5%e4%b8%ad%e6%b8%b2%e6%9f%93%e7%9a%84%e6%94%b9%e8%bf%9b%ef%bc%88%e4%ba%8c%ef%bc%89%ef%bc%9a%e5%86%8d%e6%8e%a2normal%e7%9a%84%e5%ad%98%e5%82%a8/
 class DepthToPositionAndNormalStageCallback :public Effect::RenderStageCallback
 {
 public:

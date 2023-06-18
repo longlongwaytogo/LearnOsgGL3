@@ -17,8 +17,9 @@
 #include <EffectCompositor/DispatchComputeWithBarrier.h>
 #include <random>
 #include <osgViewer/Viewer>
+#include <osg/ShapeDrawable>
 
-class ReflectiveShadowMapStageCallback :public Effect::SceneStageCallback
+class WindFiledStageCallback :public Effect::SceneStageCallback
 {
 public:
 	osg::Matrixf m_LightVPMatrix;
@@ -29,7 +30,7 @@ public:
 		Effect::SceneStageCallback::update();
 
 		// update ShadingWithRSM parameter
-		{
+		/*{
 			if (auto viewer = _pStage->getGraphicsPipeline()->getViewer()) {
 				osg::StateSet* ss = _pStage->getGraphicsPipeline()->getOrCreateStateSet();
 				osg::Matrix ViewMatrix = viewer->getCamera()->getViewMatrix();
@@ -41,7 +42,7 @@ public:
 				osg::Matrixf MainViewMatrix = ViewMatrix;
 				ss->getOrCreateUniform("u_MainViewMatrix", osg::Uniform::FLOAT_MAT4)->set(MainViewMatrix);
 			}
-		}
+		}*/
 		return true;
 
 	}
@@ -49,7 +50,7 @@ public:
 	{
 		osg::StateSet* rootSateSet = _pStage->getGraphicsPipeline()->getOrCreateStateSet();
 		{ // gbuffer
-			if (auto gbufferPass = createNewPass(Effect::FORWARD_PASS, "GBuffer"))
+			if (auto gbufferPass = createNewPass(Effect::FORWARD_PASS, "DrawScene"))
 			{
 				osg::Camera* gbuffer = gbufferPass->getCamera();
 				gbuffer->setComputeNearFarMode(osg::Camera::ComputeNearFarMode::DO_NOT_COMPUTE_NEAR_FAR);
@@ -62,39 +63,18 @@ public:
 				pProgram->addShader(osgDB::readRefShaderFile(fs));
 				ss->setAttribute(pProgram);
 
-				osg::ref_ptr<osg::Texture> depth = new osg::Texture2D;
-
-				osg::ref_ptr<osg::Texture> TextureConfig4Position	= new osg::Texture2D;
-				osg::ref_ptr<osg::Texture> TextureConfig4Normal		= new osg::Texture2D;
 				osg::ref_ptr<osg::Texture> TextureConfig4Albedo		= new osg::Texture2D;
-				osg::ref_ptr<osg::Texture> TextureConfig4Depth		= new osg::Texture2D;
-
-				TextureConfig4Normal->setInternalFormat(GL_RGBA32F);
-				TextureConfig4Normal->setSourceFormat(GL_RGBA);
-				TextureConfig4Normal->setSourceType(GL_FLOAT);
-
-				TextureConfig4Position->setInternalFormat(GL_RGBA32F);
-				TextureConfig4Position->setSourceFormat(GL_RGBA);
-				TextureConfig4Position->setSourceType(GL_FLOAT);
-
+				
 				TextureConfig4Albedo->setInternalFormat(GL_RGBA32F);
 				TextureConfig4Albedo->setSourceFormat(GL_RGBA);
 				TextureConfig4Albedo->setSourceType(GL_FLOAT);
 
-				TextureConfig4Depth->setInternalFormat(GL_DEPTH_COMPONENT32F);
-				TextureConfig4Depth->setSourceFormat(GL_DEPTH_COMPONENT);
-				TextureConfig4Depth->setSourceType(GL_FLOAT);
-				TextureConfig4Depth->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture::FilterMode::NEAREST);
-				TextureConfig4Depth->setFilter(osg::Texture2D::MAG_FILTER, osg::Texture::FilterMode::NEAREST);
-				setTextureAttachmentType(TextureConfig4Depth, Effect::ETextureAttachmentType::DepthTexture);
+		
 				registerSharedData("AlbedoTexture", TextureConfig4Albedo);
-				registerSharedData("NormalTexture", TextureConfig4Normal);
-				registerSharedData("PositionTexture", TextureConfig4Position);
-				registerSharedData("DepthTexture", TextureConfig4Depth); 
-				attachCamera(gbuffer, { TextureConfig4Albedo,TextureConfig4Normal,TextureConfig4Position,TextureConfig4Depth });
+				attachCamera(gbuffer, { TextureConfig4Albedo});
 				_pStage->addPass(gbufferPass);
 			}
-
+			
 			// create quad
 			if (auto quadPass = createNewPass(Effect::DEFERRED_PASS, "Quad"))
 			{
@@ -107,7 +87,6 @@ public:
 				program->addShader(osgDB::readRefShaderFile(fs));
 				ss->setAttribute(program); 
 				ss->setTextureAttributeAndModes(0, getSharedData("AlbedoTexture"));
-				ss->setTextureAttributeAndModes(1, getSharedData("NormalTexture"));
 				attachCamera(quad, {});
 				_pStage->addPass(quadPass);
 			}
@@ -124,8 +103,13 @@ public:
 		float h = 1152;
 		setWindowSize(w, h);
 		// create gbuffer
-		m_pipeline->registerStage<ReflectiveShadowMapStageCallback>(0,"ReflectiveShadowMap");
-		addModel(Frame::getDefaultModel());
+		m_pipeline->registerStage<WindFiledStageCallback>(0,"WindFiled");
+
+		osg::Node* pSphere = new osg::ShapeDrawable(new osg::Sphere());
+		osg::Texture2D* tex = new osg::Texture2D;
+		tex->setImage(osgDB::readImageFile("Images/Brick-Norman-Brown.TGA"));
+		pSphere->getOrCreateStateSet()->setTextureAttributeAndModes(0, tex, osg::StateAttribute::ON);
+		addModel(pSphere);
 	}
 
 	virtual void initCamera()override
@@ -137,14 +121,14 @@ public:
 		manipulator->setSpeed(5);
 		
 		// 这里进行旋转的原有是osg导入模型会按照osg坐标系修正，opengl坐标系下看到的效果，需要osg中绕x轴旋转90度
-		osg::Matrix rotate = osg::Matrix::rotate(osg::DegreesToRadians(90.0), osg::Vec3(1, 0, 0));
+	/*	osg::Matrix rotate = osg::Matrix::rotate(osg::DegreesToRadians(90.0), osg::Vec3(1, 0, 0));
 		osg::Vec3 eye = osg::Vec3(0.0, 0.0, 3.0)* rotate;
 		osg::Vec3  dir = osg::Vec3(0.0, 0.0, -1.0)*rotate;
 		osg::Vec3 center = (eye + dir);
 		osg::Vec3 up = osg::Vec3(0.0, 1.0, 0.0)* rotate;
 		osg::Matrix viewMatrix;
 		viewMatrix.makeLookAt(eye, center, up);
-		manipulator->setHomePosition(eye, center, up);
+		manipulator->setHomePosition(eye, center, up);*/
 		auto vp = m_viewer->getCamera()->getViewport();
 		m_viewer->getCamera()->setProjectionMatrix(osg::Matrix::perspective(45.0, float(m_w) / float(m_h), 0.1, 100));
 		m_viewer->setCameraManipulator(manipulator);

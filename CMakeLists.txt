@@ -128,7 +128,11 @@ add_subdirectory(src/e-graphicAlgorithm/Frame)
 add_subdirectory(src/e-graphicAlgorithm/SH_Sampler) # 球谐函数 Spherical Harmonics
 add_subdirectory(src/e-graphicAlgorithm/DepthToPositionAndNormal) # 深度重建
 add_subdirectory(src/e-graphicAlgorithm/001_ReflectiveShadowMap)  # 基于阴影的反射光照
-
+add_subdirectory(src/e-graphicAlgorithm/WindFiled)  # 基于阴影的反射光照
 
 # GPU Pro1
 add_subdirectory(src/f-GPUPro1)
+
+
+# Advance
+add_subdirectory(src/z-advance/wind)

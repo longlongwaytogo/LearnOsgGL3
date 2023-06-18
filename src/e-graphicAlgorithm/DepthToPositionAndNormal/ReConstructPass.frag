@@ -1,4 +1,4 @@
-#version 430 
+ï»¿#version 430 
 in vec2 v2f_TexCoords;
 
 layout(binding = 0) uniform sampler2D u_AlbedoTexture;
@@ -15,12 +15,12 @@ uniform float u_Far = 100.0;
 
 layout(location = 0) out vec4 fragColor;
 
-// ´ÓÉî¶È»º´æÖĞ¶ÁÈ¡Éî¶ÈÖµdepth£¬´ËÊ±Éî¶ÈÖµ·¶Î§Îª(0,1),½«Éî¶ÈÖµdepth ±ä»¯µ½NDC×ø±êÏµ(-1,1) 
+// ä»æ·±åº¦ç¼“å­˜ä¸­è¯»å–æ·±åº¦å€¼depthï¼Œæ­¤æ—¶æ·±åº¦å€¼èŒƒå›´ä¸º(0,1),å°†æ·±åº¦å€¼depth å˜åŒ–åˆ°NDCåæ ‡ç³»(-1,1) 
 #define ZeroToNOne(a) (a*2.0-1.0)   
 float ViewSpaceZFromDepth(float d)
 {
-	d = ZeroToNOne(d); // ´Ó0£¬1 --> -1,1
-	//ÊÓÏß×ø±êÏµ¿´ÏòµÄzÖá¸º·½Ïò£¬Òò´ËÒªÇóÊÓ¾õ¿Õ¼äµÄzÖµÓ¦¸ÃÒª°ÑÏßĞÔÉî¶È±ä³É¸ºÖµ
+	d = ZeroToNOne(d); // ä»0ï¼Œ1 --> -1,1
+	//è§†çº¿åæ ‡ç³»çœ‹å‘çš„zè½´è´Ÿæ–¹å‘ï¼Œå› æ­¤è¦æ±‚è§†è§‰ç©ºé—´çš„zå€¼åº”è¯¥è¦æŠŠçº¿æ€§æ·±åº¦å˜æˆè´Ÿå€¼
 	 return (2.0 * u_Near * u_Far) / (u_Far + u_Near - d * (u_Far - u_Near)); 
 }
 
@@ -57,22 +57,25 @@ void main()
 	float xOffset = 1.0 / u_WindowWidth;
 	float yOffset = 1.0 / u_WindowHeight;
 
-	// ¼ÆËã·¨Ïß
+	// è®¡ç®—æ³•çº¿
  	vec3 P = GetViewPos(v2f_TexCoords);
  	vec3 PL = GetViewPos(v2f_TexCoords+vec2(-xOffset,0));
  	vec3 PR = GetViewPos(v2f_TexCoords+vec2( xOffset,0));
  	vec3 PU = GetViewPos(v2f_TexCoords+vec2(0, yOffset));
  	vec3 PD = GetViewPos(v2f_TexCoords+vec2(0,-yOffset));
- 	vec3 rightDir = MinDiff(P,PR,PL); //Çó³ö×îĞ¡µÄ±ä»»Á¿
+ 	vec3 rightDir = MinDiff(P,PR,PL); //æ±‚å‡ºæœ€å°çš„å˜æ¢é‡
  	vec3 upDir = MinDiff(P,PU,PD);
  	vec3 normal = normalize(cross(rightDir,upDir));
  
+ 	//fragColor.rgb =  normalize(normal*0.5)+0.5;
  	fragColor.rgb =  normalize(normal);
 
 	//fragColor = vec4(GetViewPos(v2f_TexCoords), 1.0f);
 //	fragColor = texture(u_AlbedoTexture,v2f_TexCoords);
 //	fragColor.rgb = pow(fragColor.rgb, vec3(1.0f/2.2f));
 
+	//vec4 pos = texture(u_PositionTexture,v2f_TexCoords);
+	//fragColor = vec4(pos.xyz -P,1.0);//vec4(pos.xyz - P,1.0);//pos*0.5+0.5;
 	 
 
 
